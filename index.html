@@ -45,7 +45,7 @@
             </div>
         </aside>
 
-        <!-- Główna zawartość zakładek (Każda zakładka ma rozbudowany szkielet) -->
+        <!-- Główna zawartość zakładek -->
         <main class="flex-1 p-6 md:p-10 max-w-4xl">
             
             <!-- 1. PULPIT -->
@@ -54,10 +54,10 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
                         <p class="text-sm text-gray-500">Towar na stanie</p>
-                        <p class="text-2xl font-bold mt-1">0 par</p>
+                        <p id="stat-count" class="text-2xl font-bold mt-1">0 par</p>
                     </div>
                     <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-                        <p class="text-sm text-gray-500">Suma sprzedaży (Ten miesiąc)</p>
+                        <p class="text-sm text-gray-500">Suma sprzedaży</p>
                         <p class="text-2xl font-bold mt-1">0 zł</p>
                     </div>
                     <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
@@ -73,52 +73,59 @@
                 <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm mb-6">
                     <h2 class="font-semibold text-lg mb-3">Dodaj nową parę butów</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input type="text" placeholder="Model butów (np. Jordan 4 Retro)" class="p-3 border rounded-lg text-sm">
-                        <input type="text" placeholder="Rozmiar (np. 42.5 EU)" class="p-3 border rounded-lg text-sm">
-                        <input type="number" placeholder="Cena zakupu (zł)" class="p-3 border rounded-lg text-sm">
-                        <input type="number" placeholder="Planowana cena sprzedaży (zł)" class="p-3 border rounded-lg text-sm">
+                        <input type="text" id="item-name" placeholder="Model butów (np. Jordan 4)" class="p-3 border rounded-lg text-sm">
+                        <input type="text" id="item-size" placeholder="Rozmiar (np. 42.5 EU)" class="p-3 border rounded-lg text-sm">
+                        <input type="number" id="item-buy" placeholder="Cena zakupu (zł)" class="p-3 border rounded-lg text-sm">
+                        <input type="number" id="item-sell" placeholder="Planowana cena sprzedaży (zł)" class="p-3 border rounded-lg text-sm">
                     </div>
-                    <button class="mt-4 bg-black text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-800">Dodaj do magazynu</button>
+                    <button onclick="addItem()" class="mt-4 bg-black text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-800">Dodaj do magazynu</button>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                    <h2 class="font-semibold text-lg mb-3">Aktualny magazyn</h2>
+                    <div id="items-list" class="space-y-2">
+                        <p class="text-gray-500 text-sm">Brak towaru na stanie.</p>
+                    </div>
                 </div>
             </div>
 
-            <!-- 3. ARCHIWUM SPRZEDANYCH -->
+            <!-- 3. ARCHIWUM -->
             <div id="content-archiwum" class="tab-pane hidden">
                 <h1 class="text-2xl font-bold mb-4">Archiwum sprzedanych</h1>
                 <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-                    <p class="text-gray-500 text-sm">Tutaj pojawią się buty, które zostały już sprzedane wraz z wyliczonym zyskiem.</p>
+                    <p class="text-gray-500 text-sm">Historia sprzedanych par obuwia.</p>
                 </div>
             </div>
 
-            <!-- 4. SUMY SPRZEDAŻY -->
+            <!-- 4. SUMY -->
             <div id="content-sumy" class="tab-pane hidden">
                 <h1 class="text-2xl font-bold mb-4">Sumy sprzedaży</h1>
                 <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-                    <p class="text-gray-500 text-sm">Zestawienie przychodów i kontrola limitu obrotu.</p>
+                    <p class="text-gray-500 text-sm">Zestawienie przychodów.</p>
                 </div>
             </div>
 
-            <!-- 5. FAKTURY I BOXY -->
+            <!-- 5. FAKTURY -->
             <div id="content-faktury" class="tab-pane hidden">
                 <h1 class="text-2xl font-bold mb-4">Faktury i Boxy</h1>
                 <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-                    <p class="text-gray-500 text-sm">Numery faktur zakupu oraz numery boxów magazynowych.</p>
+                    <p class="text-gray-500 text-sm">Numery faktur zakupu.</p>
                 </div>
             </div>
 
-            <!-- 6. DODATKOWE KOSZTY -->
+            <!-- 6. KOSZTY -->
             <div id="content-koszty" class="tab-pane hidden">
                 <h1 class="text-2xl font-bold mb-4">Dodatkowe koszty</h1>
                 <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-                    <p class="text-gray-500 text-sm">Ewidencja dodatkowych wydatków operacyjnych.</p>
+                    <p class="text-gray-500 text-sm">Ewidencja wydatków.</p>
                 </div>
             </div>
 
-            <!-- 7. PALIWO I DOJAZDY -->
+            <!-- 7. PALIWO -->
             <div id="content-paliwo" class="tab-pane hidden">
                 <h1 class="text-2xl font-bold mb-4">Paliwo i dojazdy</h1>
                 <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-                    <p class="text-gray-500 text-sm">Rozliczanie kosztów wyjazdów po towar (np. Wólka Kosowska, Nadarzyn).</p>
+                    <p class="text-gray-500 text-sm">Rozliczanie wyjazdów.</p>
                 </div>
             </div>
 
@@ -127,7 +134,7 @@
 
     <!-- Logika JavaScript -->
     <script>
-        const CORRECT_PIN = "7890"; // Twój aktualny PIN
+        const CORRECT_PIN = "7890"; // Twój PIN
 
         function checkPin() {
             const input = document.getElementById('pin-input').value;
@@ -157,10 +164,66 @@
             }
         }
 
+        // Obsługa zapisu i wyświetlania towarów w pamięci telefonu
+        let items = JSON.parse(localStorage.getItem('kickslike_items')) || [];
+
+        function renderItems() {
+            const listContainer = document.getElementById('items-list');
+            const statCount = document.getElementById('stat-count');
+            statCount.innerText = items.length + " par";
+
+            if (items.length === 0) {
+                listContainer.innerHTML = '<p class="text-gray-500 text-sm">Brak towaru na stanie.</p>';
+                return;
+            }
+
+            listContainer.innerHTML = '';
+            items.forEach((item, index) => {
+                listContainer.innerHTML += `
+                    <div class="flex justify-between items-center p-3 bg-gray-50 border rounded-lg text-sm">
+                        <div>
+                            <span class="font-bold">${item.name}</span> (Rozm: ${item.size})
+                            <div class="text-gray-500 text-xs">Zakup: ${item.buy} zł | Cena: ${item.sell} zł</div>
+                        </div>
+                        <button onclick="removeItem(${index})" class="text-red-600 hover:text-red-800 text-xs font-medium px-2 py-1 bg-white border rounded">Usuń</button>
+                    </div>
+                `;
+            });
+        }
+
+        function addItem() {
+            const name = document.getElementById('item-name').value;
+            const size = document.getElementById('item-size').value;
+            const buy = document.getElementById('item-buy').value;
+            const sell = document.getElementById('item-sell').value;
+
+            if (!name) {
+                alert("Wpisz model butów!");
+                return;
+            }
+
+            items.push({ name, size, buy, sell });
+            localStorage.setItem('kickslike_items', JSON.stringify(items));
+            
+            document.getElementById('item-name').value = '';
+            document.getElementById('item-size').value = '';
+            document.getElementById('item-buy').value = '';
+            document.getElementById('item-sell').value = '';
+
+            renderItems();
+        }
+
+        function removeItem(index) {
+            items.splice(index, 1);
+            localStorage.setItem('kickslike_items', JSON.stringify(items));
+            renderItems();
+        }
+
         window.onload = function() {
             if (localStorage.getItem('kickslike_auth') === 'true') {
                 document.getElementById('login-screen').classList.add('hidden');
             }
+            renderItems();
         }
     </script>
 </body>
