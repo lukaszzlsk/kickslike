@@ -45,42 +45,81 @@
             </div>
         </aside>
 
-        <!-- Główna zawartość zakładek -->
+        <!-- Główna zawartość zakładek (Każda zakładka ma rozbudowany szkielet) -->
         <main class="flex-1 p-6 md:p-10 max-w-4xl">
             
+            <!-- 1. PULPIT -->
             <div id="content-pulpit" class="tab-pane">
                 <h1 class="text-2xl font-bold mb-4">Mój pulpit</h1>
-                <p class="text-gray-600">Witaj w panelu Kickslike! Wszystko działa poprawnie. Wybierz zakładkę z menu po lewej stronie.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                        <p class="text-sm text-gray-500">Towar na stanie</p>
+                        <p class="text-2xl font-bold mt-1">0 par</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                        <p class="text-sm text-gray-500">Suma sprzedaży (Ten miesiąc)</p>
+                        <p class="text-2xl font-bold mt-1">0 zł</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                        <p class="text-sm text-gray-500">Limit działalności nierejestrowanej</p>
+                        <p class="text-2xl font-bold mt-1 text-green-600">0%</p>
+                    </div>
+                </div>
             </div>
 
+            <!-- 2. TOWAR NA SPRZEDAŻ -->
             <div id="content-towar" class="tab-pane hidden">
                 <h1 class="text-2xl font-bold mb-4">Towar na sprzedaż</h1>
-                <p class="text-gray-600">Tutaj wkrótce pojawi się lista butów i zarządzanie magazynem.</p>
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm mb-6">
+                    <h2 class="font-semibold text-lg mb-3">Dodaj nową parę butów</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" placeholder="Model butów (np. Jordan 4 Retro)" class="p-3 border rounded-lg text-sm">
+                        <input type="text" placeholder="Rozmiar (np. 42.5 EU)" class="p-3 border rounded-lg text-sm">
+                        <input type="number" placeholder="Cena zakupu (zł)" class="p-3 border rounded-lg text-sm">
+                        <input type="number" placeholder="Planowana cena sprzedaży (zł)" class="p-3 border rounded-lg text-sm">
+                    </div>
+                    <button class="mt-4 bg-black text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-800">Dodaj do magazynu</button>
+                </div>
             </div>
 
+            <!-- 3. ARCHIWUM SPRZEDANYCH -->
             <div id="content-archiwum" class="tab-pane hidden">
                 <h1 class="text-2xl font-bold mb-4">Archiwum sprzedanych</h1>
-                <p class="text-gray-600">Historia sprzedanych par obuwia.</p>
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                    <p class="text-gray-500 text-sm">Tutaj pojawią się buty, które zostały już sprzedane wraz z wyliczonym zyskiem.</p>
+                </div>
             </div>
 
+            <!-- 4. SUMY SPRZEDAŻY -->
             <div id="content-sumy" class="tab-pane hidden">
                 <h1 class="text-2xl font-bold mb-4">Sumy sprzedaży</h1>
-                <p class="text-gray-600">Podsumowania finansowe i zyski.</p>
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                    <p class="text-gray-500 text-sm">Zestawienie przychodów i kontrola limitu obrotu.</p>
+                </div>
             </div>
 
+            <!-- 5. FAKTURY I BOXY -->
             <div id="content-faktury" class="tab-pane hidden">
                 <h1 class="text-2xl font-bold mb-4">Faktury i Boxy</h1>
-                <p class="text-gray-600">Zarządzanie dowodami zakupu i boxami.</p>
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                    <p class="text-gray-500 text-sm">Numery faktur zakupu oraz numery boxów magazynowych.</p>
+                </div>
             </div>
 
+            <!-- 6. DODATKOWE KOSZTY -->
             <div id="content-koszty" class="tab-pane hidden">
                 <h1 class="text-2xl font-bold mb-4">Dodatkowe koszty</h1>
-                <p class="text-gray-600">Koszty operacyjne i prowizje.</p>
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                    <p class="text-gray-500 text-sm">Ewidencja dodatkowych wydatków operacyjnych.</p>
+                </div>
             </div>
 
+            <!-- 7. PALIWO I DOJAZDY -->
             <div id="content-paliwo" class="tab-pane hidden">
                 <h1 class="text-2xl font-bold mb-4">Paliwo i dojazdy</h1>
-                <p class="text-gray-600">Rozliczanie wyjazdów po towar.</p>
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                    <p class="text-gray-500 text-sm">Rozliczanie kosztów wyjazdów po towar (np. Wólka Kosowska, Nadarzyn).</p>
+                </div>
             </div>
 
         </main>
@@ -88,8 +127,7 @@
 
     <!-- Logika JavaScript -->
     <script>
-        // TUTAJ ZMIENIASZ SWÓJ PIN:
-        const CORRECT_PIN = "0629"; // Zmień w cudzysłowie na swój PIN
+        const CORRECT_PIN = "7890"; // Twój aktualny PIN
 
         function checkPin() {
             const input = document.getElementById('pin-input').value;
@@ -119,7 +157,6 @@
             }
         }
 
-        // Automatyczne pomijanie PIN-u w ramach tej samej sesji
         window.onload = function() {
             if (localStorage.getItem('kickslike_auth') === 'true') {
                 document.getElementById('login-screen').classList.add('hidden');
