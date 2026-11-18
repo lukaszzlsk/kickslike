@@ -3,545 +3,901 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kickslike - Panel Zarządzania</title>
+    <title>Kickslike - System Zarządzania</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    </style>
 </head>
-<body class="bg-gray-100 text-gray-900 font-sans antialiased">
+<body class="bg-[#F4F6F9] text-slate-900 font-sans antialiased">
 
-    <!-- Ekran logowania PIN -->
-    <div id="login-screen" class="fixed inset-0 bg-gray-900 z-50 flex items-center justify-center p-4">
+    <!-- EKRAN LOGOWANIA PIN (0629) -->
+    <div id="login-screen" class="fixed inset-0 bg-slate-900/95 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl text-center">
-            <div class="w-14 h-14 bg-black text-white rounded-2xl mx-auto flex items-center justify-center font-bold text-2xl mb-4 shadow-lg">K</div>
-            <h2 class="text-2xl font-bold mb-1">Kickslike</h2>
-            <p class="text-sm text-gray-500 mb-6">Wpisz PIN, aby odblokować panel</p>
-            <input type="password" id="pin-input" maxlength="4" placeholder="••••" class="w-full text-center text-3xl tracking-widest py-3 border-2 border-gray-200 rounded-2xl mb-4 focus:outline-none focus:border-black transition">
-            <button onclick="checkPin()" class="w-full bg-black text-white py-3.5 rounded-2xl font-semibold hover:bg-gray-800 transition shadow-md">Odblokuj</button>
-            <p id="pin-error" class="text-red-500 text-sm mt-3 hidden font-medium">Nieprawidłowy PIN!</p>
+            <div class="w-14 h-14 bg-blue-600 text-white rounded-2xl mx-auto flex items-center justify-center shadow-lg shadow-blue-600/30 mb-4">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-900">Kickslike</h2>
+            <p class="text-xs text-slate-400 font-medium mb-6">System v1 • Autoryzacja</p>
+            <input type="password" id="pin-input" maxlength="4" inputmode="numeric" placeholder="••••" class="w-full text-center text-3xl tracking-[0.5em] py-3.5 border-2 border-slate-200 rounded-2xl mb-4 focus:outline-none focus:border-blue-600 transition">
+            <button onclick="checkPin()" class="w-full bg-slate-900 text-white py-3.5 rounded-2xl font-semibold hover:bg-slate-800 transition shadow-md">Odblokuj panel</button>
+            <p id="pin-error" class="text-rose-500 text-xs mt-3 hidden font-semibold">Nieprawidłowy kod PIN!</p>
         </div>
     </div>
 
-    <!-- Główny układ aplikacji -->
-    <div id="app-container" class="min-h-screen flex flex-col md:flex-row">
+    <!-- TŁO DLA MENU MOBILNEGO -->
+    <div id="mobile-backdrop" onclick="toggleMobileMenu()" class="fixed inset-0 bg-slate-900/50 z-30 hidden md:hidden backdrop-blur-xs"></div>
+
+    <div class="min-h-screen flex flex-col md:flex-row">
         
-        <!-- Menu Boczne -->
-        <aside class="w-full md:w-72 bg-white border-b md:border-r border-gray-200 p-6 flex flex-col justify-between shadow-sm">
+        <!-- MENU BOCZNE -->
+        <aside id="sidebar" class="fixed md:sticky top-0 left-0 z-40 h-screen w-72 bg-white border-r border-slate-200/80 p-5 flex flex-col justify-between transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out overflow-y-auto">
             <div>
-                <div class="flex items-center gap-3 px-2 mb-8">
-                    <div class="w-10 h-10 bg-black text-white rounded-xl flex items-center justify-center font-bold text-xl shadow">K</div>
-                    <div>
-                        <span class="font-bold text-lg block leading-tight">Kickslike</span>
-                        <span class="text-xs text-gray-400 font-medium">System v1</span>
+                <div class="flex items-center justify-between mb-8 px-1">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-md shadow-blue-600/20">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        </div>
+                        <div>
+                            <span class="font-bold text-lg text-slate-900 block leading-tight">Kickslike</span>
+                            <span class="text-xs text-slate-400 font-medium">System v1</span>
+                        </div>
                     </div>
+                    <button onclick="toggleMobileMenu()" class="md:hidden p-2 text-slate-400 hover:text-slate-600 rounded-xl">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
                 </div>
-                <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-2">Magazyn i Sprzedaż</div>
+
+                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2.5 px-3">Magazyn i sprzedaż</div>
                 <nav class="space-y-1 mb-6">
-                    <a href="#" onclick="switchTab('pulpit')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm text-gray-700 hover:bg-gray-100 transition">🏠 Mój pulpit</a>
-                    <a href="#" onclick="switchTab('towar')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm text-gray-700 hover:bg-gray-100 transition">📦 Towar na sprzedaż</a>
-                    <a href="#" onclick="switchTab('archiwum')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm text-gray-700 hover:bg-gray-100 transition">📂 Archiwum sprzedanych</a>
-                    <a href="#" onclick="switchTab('sumy')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm text-gray-700 hover:bg-gray-100 transition">📊 Sumy sprzedaży</a>
+                    <button onclick="switchTab('pulpit')" id="nav-pulpit" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-sm font-semibold bg-blue-50 text-blue-700 transition">
+                        <span class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                            Mój pulpit
+                        </span>
+                    </button>
+                    <button onclick="switchTab('towar')" id="nav-towar" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+                        <span class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                            Towar na sprzedaż
+                        </span>
+                        <span id="badge-nav-towar" class="text-xs font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">0</span>
+                    </button>
+                    <button onclick="switchTab('archiwum')" id="nav-archiwum" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+                        <span class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+                            Archiwum sprzedanych
+                        </span>
+                        <span id="badge-nav-archiwum" class="text-xs font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">0</span>
+                    </button>
+                    <button onclick="switchTab('sumy')" id="nav-sumy" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+                        <span class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                            Sumy sprzedaży
+                        </span>
+                    </button>
                 </nav>
 
-                <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-2">Finanse i Koszty</div>
+                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2.5 px-3">Finanse i koszty</div>
                 <nav class="space-y-1">
-                    <a href="#" onclick="switchTab('faktury')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm text-gray-700 hover:bg-gray-100 transition">🧾 Faktury i Boxy</a>
-                    <a href="#" onclick="switchTab('koszty')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm text-gray-700 hover:bg-gray-100 transition">🏷️ Dodatkowe koszty</a>
-                    <a href="#" onclick="switchTab('paliwo')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm text-gray-700 hover:bg-gray-100 transition">⛽ Paliwo i dojazdy</a>
+                    <button onclick="switchTab('faktury')" id="nav-faktury" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+                        <span class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            Faktury i Boxy
+                        </span>
+                        <span id="badge-nav-faktury" class="text-xs font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">0</span>
+                    </button>
+                    <button onclick="switchTab('koszty')" id="nav-koszty" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+                        <span class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                            Dodatkowe koszta
+                        </span>
+                    </button>
+                    <button onclick="switchTab('paliwo')" id="nav-paliwo" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+                        <span class="flex items-center gap-3">
+                            <svg class="w-5 h-5 text-sky-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                            Paliwo i dojazdy
+                        </span>
+                    </button>
                 </nav>
             </div>
-            <div class="mt-8 pt-4 border-t border-gray-100">
-                <button onclick="lockApp()" class="w-full text-left px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-xl transition">🔒 Zablokuj aplikację</button>
+
+            <div class="mt-8 pt-4 border-t border-slate-100 space-y-2">
+                <button onclick="exportCSV()" class="w-full py-2 px-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 transition">Eksport CSV / Excel</button>
+                <div class="flex justify-between items-center px-1 pt-1">
+                    <button onclick="lockApp()" class="text-xs font-semibold text-slate-400 hover:text-slate-700">Zablokuj PIN</button>
+                    <button onclick="clearAllData()" class="text-xs font-semibold text-rose-500 hover:text-rose-700">Wyczyść dane</button>
+                </div>
             </div>
         </aside>
 
-        <!-- Główna zawartość zakładek -->
-        <main class="flex-1 p-6 md:p-10 max-w-5xl">
+        <!-- GŁÓWNA ZAWARTOŚĆ -->
+        <div class="flex-1 flex flex-col min-w-0">
             
-            <!-- 1. PULPIT -->
-            <div id="content-pulpit" class="tab-pane">
-                <div class="flex justify-between items-center mb-6">
-                    <h1 class="text-2xl font-bold">Mój pulpit</h1>
-                    <button onclick="switchTab('towar')" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center gap-2">＋ Dodaj produkt</button>
+            <header class="bg-white/90 backdrop-blur-md sticky top-0 z-20 border-b border-slate-200/80 px-4 md:px-8 py-3.5 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleMobileMenu()" class="md:hidden p-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </button>
+                    <h1 id="header-title" class="text-lg md:text-xl font-bold text-slate-900">Mój pulpit</h1>
                 </div>
+                <button onclick="switchTab('towar')" class="bg-[#0F9D58] hover:bg-[#0b8047] text-white px-4 py-2 rounded-full text-xs md:text-sm font-semibold shadow-sm flex items-center gap-1.5 transition">
+                    <span class="text-base leading-none">+</span> Dodaj produkt
+                </button>
+            </header>
 
-                <!-- Witaj / Info box -->
-                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm mb-6">
-                    <div class="flex items-center gap-2 text-xs font-semibold text-indigo-600 bg-indigo-50 w-fit px-3 py-1 rounded-full mb-2">⚡ Działalność nierejestrowana • Kickslike</div>
-                    <h2 class="text-xl font-bold text-gray-900 mb-1">Panel operacyjny Kickslike</h2>
-                    <p class="text-sm text-gray-500 mb-4">Kontroluj limit miesięczny sprzedaży, zysk na czysto i wydatki na boxy.</p>
-                    <button onclick="switchTab('towar')" class="bg-gray-900 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-black transition shadow-sm">Przejdź do magazynu</button>
-                </div>
+            <main class="p-4 md:p-8 max-w-4xl w-full mx-auto space-y-5">
 
-                <!-- Kafelki statystyk -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
-                        <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Przychód (Bieżący mies.)</p>
-                        <p id="stat-sales" class="text-2xl font-bold text-gray-900 mt-1">0,00 zł</p>
-                        <p class="text-xs text-gray-400 mt-1">Limit miesięczny: 3 604,00 zł</p>
-                    </div>
-                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
-                        <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Czysty zysk (Bieżący mies.)</p>
-                        <p id="stat-profit" class="text-2xl font-bold text-emerald-600 mt-1">0,00 zł</p>
-                        <p class="text-xs text-gray-400 mt-1">Przychód minus wszystkie koszty</p>
-                    </div>
-                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
-                        <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Koszty (Bieżący mies.)</p>
-                        <p id="stat-costs" class="text-2xl font-bold text-rose-600 mt-1">0,00 zł</p>
-                        <p class="text-xs text-gray-400 mt-1">Boxy + pakowanie + paliwo</p>
-                    </div>
-                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
-                        <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Towar w magazynie</p>
-                        <p id="stat-stock" class="text-2xl font-bold text-blue-600 mt-1">0,00 zł</p>
-                        <p id="stat-stock-count" class="text-xs text-gray-400 mt-1">0 aktywnych sztuk na stanie</p>
-                    </div>
-                </div>
-
-                <!-- Karta limitu z paskiem -->
-                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm mb-6">
-                    <div class="flex justify-between items-center mb-2">
-                        <div>
-                            <h3 class="font-bold text-gray-900">Limit Działalności Nierejestrowanej</h3>
-                            <p class="text-xs text-gray-500">Miesięczny przychód brutto (bez odliczania kosztów)</p>
-                        </div>
-                        <span id="badge-status" class="text-xs px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full font-semibold">Bezpiecznie</span>
-                    </div>
+                <!-- 1. MÓJ PULPIT -->
+                <div id="tab-pulpit" class="tab-content space-y-5">
                     
-                    <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden my-4">
-                        <div id="pulpit-progress" class="bg-emerald-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold mb-3">
+                            <span class="w-2 h-2 rounded-full bg-blue-600"></span> Działalność nierejestrowana • Kickslike
+                        </div>
+                        <h2 class="text-xl font-bold text-slate-900 mb-1">Panel operacyjny Kickslike</h2>
+                        <p class="text-xs md:text-sm text-slate-500 mb-5">Kontroluj limit miesięczny sprzedaży, zysk na czysto i wydatki na boxy.</p>
+                        <button onclick="switchTab('towar')" class="bg-[#0F172A] hover:bg-slate-800 text-white px-5 py-2.5 rounded-full text-xs font-semibold transition">Przejdź do magazynu</button>
                     </div>
-                    <div class="flex justify-between text-xs font-medium text-gray-500">
-                        <span id="pulpit-progress-text">0,00 zł (0%)</span>
-                        <span>Maks. 3 604,00 zł / mies.</span>
-                    </div>
-                </div>
-            </div>
 
-            <!-- 2. TOWAR NA SPRZEDAŻ -->
-            <div id="content-towar" class="tab-pane hidden">
-                <div class="flex justify-between items-center mb-6">
-                    <h1 class="text-2xl font-bold">Towar na sprzedaż</h1>
-                    <button onclick="switchTab('towar')" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center gap-2">＋ Dodaj produkt</button>
-                </div>
-                
-                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm mb-6">
-                    <h2 class="font-bold text-lg mb-4">Dodaj nową parę butów</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">Model butów *</label>
-                            <input type="text" id="item-name" placeholder="np. Nike Air Force 1 '07 White" class="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-black">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs">
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">PRZYCHÓD (BIEŻĄCY MIES.)</p>
+                            <p id="dash-rev" class="text-2xl font-extrabold text-slate-900 mt-1.5">0,00 zł</p>
+                            <p class="text-xs text-slate-400 mt-1">Limit miesięczny: 3 604,00 zł</p>
                         </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">Rozmiar *</label>
-                            <input type="text" id="item-size" placeholder="np. 42.5 / L" class="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-black">
+                        <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs">
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">CZYSTY ZYSK (BIEŻĄCY MIES.)</p>
+                            <p id="dash-profit" class="text-2xl font-extrabold text-[#0F9D58] mt-1.5">0,00 zł</p>
+                            <p class="text-xs text-slate-400 mt-1">Przychód minus wszystkie koszty</p>
                         </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">Koszt zakupu szt. (zł) *</label>
-                            <input type="number" id="item-buy" placeholder="np. 350.00" class="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-black">
+                        <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs">
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">KOSZTY (BIEŻĄCY MIES.)</p>
+                            <p id="dash-costs" class="text-2xl font-extrabold text-rose-600 mt-1.5">0,00 zł</p>
+                            <p class="text-xs text-slate-400 mt-1">Boxy + pakowanie + paliwo</p>
                         </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">Moja cena sprzedaży (zł) *</label>
-                            <input type="number" id="item-sell" placeholder="np. 499.00" class="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-black">
+                        <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs">
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">TOWAR W MAGAZYNIE</p>
+                            <p id="dash-stock-val" class="text-2xl font-extrabold text-blue-600 mt-1.5">0,00 zł</p>
+                            <p id="dash-stock-qty" class="text-xs text-slate-400 mt-1">0 aktywnych sztuk na stanie</p>
                         </div>
                     </div>
-                    <button onclick="addItem()" class="mt-5 bg-blue-600 text-white px-6 py-3 rounded-xl text-sm font-semibold hover:bg-blue-700 transition shadow-sm">＋ Dodaj na stan Kickslike</button>
-                </div>
 
-                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                    <h2 class="font-bold text-lg mb-4">Aktualny magazyn</h2>
-                    <div id="items-list" class="space-y-3">
-                        <p class="text-gray-400 text-sm">Brak towaru na stanie.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 3. ARCHIWUM SPRZEDANYCH -->
-            <div id="content-archiwum" class="tab-pane hidden">
-                <div class="flex justify-between items-center mb-6">
-                    <h1 class="text-2xl font-bold">Archiwum sprzedanych</h1>
-                    <button onclick="switchTab('towar')" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center gap-2">＋ Dodaj produkt</button>
-                </div>
-                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm mb-6">
-                    <h2 class="font-bold text-lg mb-2">Archiwum sprzedanych przedmiotów</h2>
-                    <p class="text-xs text-gray-500 mb-4">Przedmioty oznaczone jako sprzedane z dokładną kwotą transakcji.</p>
-                    <div class="flex gap-4">
-                        <div class="bg-gray-50 p-4 rounded-xl border flex-1">
-                            <p class="text-xs text-gray-400 uppercase">Suma sprzedaży</p>
-                            <p class="text-lg font-bold text-gray-900">0,00 zł</p>
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <h3 class="font-bold text-sm md:text-base text-slate-900">Limit Działalności Nierejestrowanej</h3>
+                                <p class="text-xs text-slate-400">Miesięczny przychód brutto (bez odliczania kosztów)</p>
+                            </div>
+                            <span id="dash-limit-badge" class="text-xs font-bold px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200">Bezpiecznie</span>
                         </div>
-                        <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100 flex-1">
-                            <p class="text-xs text-emerald-600 uppercase">Zysk na sztukach</p>
-                            <p class="text-lg font-bold text-emerald-700">0,00 zł</p>
+                        <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden my-3">
+                            <div id="dash-limit-bar" class="bg-emerald-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex justify-between text-xs font-semibold text-slate-600">
+                            <span id="dash-limit-left">0,00 zł (0%)</span>
+                            <span class="text-slate-400 font-normal">Maks. 3 604,00 zł / mies.</span>
                         </div>
                     </div>
-                </div>
-                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm text-center py-12">
-                    <p class="text-gray-400 text-sm">Archiwum sprzedanych jest jeszcze puste.</p>
-                    <p class="text-xs text-gray-400 mt-1">Kliknij „Oznacz jako sprzedane” w zakładce Towar na sprzedaż.</p>
-                </div>
-            </div>
 
-            <!-- 4. SUMY SPRZEDAŻY -->
-            <div id="content-sumy" class="tab-pane hidden">
-                <div class="flex justify-between items-center mb-6">
-                    <h1 class="text-2xl font-bold">Sumy sprzedaży</h1>
-                    <button onclick="switchTab('towar')" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center gap-2">＋ Dodaj produkt</button>
-                </div>
-
-                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm mb-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="font-bold text-lg">Miesięczny przychód</h2>
-                        <span class="text-xs bg-gray-100 px-3 py-1 rounded-xl text-gray-600 font-medium">listopad 2026</span>
-                    </div>
-                    <p id="sumy-rev-val" class="text-3xl font-extrabold text-gray-900 mb-2">0,00 zł</p>
-                    <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden mb-2">
-                        <div id="sumy-progress" class="bg-emerald-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
-                    </div>
-                    <p id="sumy-desc" class="text-xs text-gray-500">Zapas do limitu 3 604 zł: 3 604,00 zł</p>
-                </div>
-            </div>
-
-            <!-- 5. FAKTURY I BOXY -->
-            <div id="content-faktury" class="tab-pane hidden">
-                <div class="flex justify-between items-center mb-6">
-                    <h1 class="text-2xl font-bold">Faktury i Boxy</h1>
-                    <button onclick="switchTab('towar')" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center gap-2">＋ Dodaj produkt</button>
-                </div>
-
-                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm mb-6">
-                    <h2 class="font-bold text-lg mb-4">Dodaj fakturę / zakupiony box z hurtowni</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">Hurtownia / Opis boxu *</label>
-                            <input type="text" id="invoice-desc" placeholder="np. Hurtownia Wólka Kosowska - Box 12 par" class="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-black">
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <h3 class="font-bold text-sm md:text-base text-slate-900">Kwota wolna od podatku PIT (0 zł podatku)</h3>
+                                <p class="text-xs text-slate-400">Roczny czysty dochód (przychód minus koszty z faktur)</p>
+                            </div>
+                            <span class="text-xs font-bold px-3 py-1 rounded-full bg-blue-50 text-blue-600 border border-blue-200">PIT 0% do 30k</span>
                         </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">Nr faktury / paragonu *</label>
-                            <input type="text" id="invoice-number" placeholder="np. FV/2026/11/018" class="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-black">
+                        <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden my-3">
+                            <div id="dash-pit-bar" class="bg-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
                         </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">Kwota boxa (zł) *</label>
-                            <input type="number" id="invoice-cost" placeholder="np. 1000.00" class="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-black">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">Liczba sztuk w boxie *</label>
-                            <input type="number" id="invoice-count" placeholder="np. 12" class="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-black">
+                        <div class="flex justify-between text-xs font-semibold text-slate-600">
+                            <span id="dash-pit-left">0,00 zł (0%)</span>
+                            <span class="text-slate-400 font-normal">Limit 30 000,00 zł / rok</span>
                         </div>
                     </div>
-                    <button onclick="addInvoice()" class="mt-5 bg-blue-600 text-white px-6 py-3 rounded-xl text-sm font-semibold hover:bg-blue-700 transition shadow-sm">Zapisz fakturę / box</button>
-                </div>
 
-                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                    <h2 class="font-bold text-lg mb-4">Zapisane faktury / boxy</h2>
-                    <div id="invoices-list" class="space-y-3">
-                        <p class="text-gray-400 text-sm">Brak zapisanych faktur / boxów.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 6. DODATKOWE KOSZTY -->
-            <div id="content-koszty" class="tab-pane hidden">
-                <div class="flex justify-between items-center mb-6">
-                    <h1 class="text-2xl font-bold">Dodatkowe koszty</h1>
-                    <button onclick="switchTab('towar')" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center gap-2">＋ Dodaj produkt</button>
-                </div>
-
-                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm mb-6">
-                    <h2 class="font-bold text-lg mb-4">Dodaj dodatkowy koszt (kartki, drukarka, kartony, folia)</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">Nazwa wydatku *</label>
-                            <input type="text" id="cost-name" placeholder="np. Ryza papieru A4 + taśma" class="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-black">
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-bold text-sm md:text-base text-slate-900">Ostatnie sprzedaże</h3>
+                            <button onclick="switchTab('archiwum')" class="text-xs font-semibold text-blue-600 hover:underline">Zobacz całe archiwum →</button>
                         </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">Kwota (zł) *</label>
-                            <input type="number" id="cost-amount" placeholder="np. 45.00" class="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-black">
+                        <div id="dash-recent-sales" class="text-center py-6 text-xs text-slate-400">
+                            Brak sprzedanych przedmiotów. Dodaj towar i oznacz pierwszą sprzedaż.
                         </div>
                     </div>
-                    <button onclick="addCost()" class="mt-5 bg-blue-600 text-white px-6 py-3 rounded-xl text-sm font-semibold hover:bg-blue-700 transition shadow-sm">Dodaj koszt</button>
                 </div>
 
-                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                    <h2 class="font-bold text-lg mb-4">Lista kosztów dodatkowych</h2>
-                    <div id="costs-list" class="space-y-3">
-                        <p class="text-gray-400 text-sm">Brak dodatkowych kosztów.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 7. PALIWO I DOJAZDY -->
-            <div id="content-paliwo" class="tab-pane hidden">
-                <div class="flex justify-between items-center mb-6">
-                    <h1 class="text-2xl font-bold">Paliwo i dojazdy</h1>
-                    <button onclick="switchTab('towar')" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-emerald-700 shadow-sm flex items-center gap-2">＋ Dodaj produkt</button>
-                </div>
-
-                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm mb-6">
-                    <h2 class="font-bold text-lg mb-4">Dodaj wpis paliwa / dojazdu po towar</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">Trasa / Cel wyjazdu *</label>
-                            <input type="text" id="fuel-desc" placeholder="np. Wyjazd po box - Nadarzyn / Wólka" class="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-black">
+                <!-- 2. TOWAR NA SPRZEDAŻ -->
+                <div id="tab-towar" class="tab-content hidden space-y-5">
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs">
+                        <h2 class="font-bold text-base md:text-lg text-slate-900 mb-4">Dodaj produkt na stan</h2>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nazwa produktu / Model *</label>
+                                <input type="text" id="prod-name" placeholder="np. Nike Air Force 1 '07 White" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:border-blue-600">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Rozmiar *</label>
+                                <input type="text" id="prod-size" placeholder="np. 42.5 / L" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:border-blue-600">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Platforma</label>
+                                <select id="prod-platform" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:border-blue-600">
+                                    <option value="Vinted">Vinted</option>
+                                    <option value="OLX">OLX</option>
+                                    <option value="StockX / Alias">StockX / Alias</option>
+                                    <option value="Instagram / Lokalnie">Instagram / Lokalnie</option>
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Cena rynkowa (zł)</label>
+                                    <input type="number" id="prod-market" placeholder="np. 449.00" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:border-blue-600">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Moja cena sprzedaży (zł) *</label>
+                                    <input type="number" id="prod-price" placeholder="np. 289.00" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:border-blue-600">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Przypisz Box / Fakturę</label>
+                                <select id="prod-box" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:border-blue-600">
+                                    <option value="single">-- Zakup pojedynczy --</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Koszt zakupu szt. (zł) *</label>
+                                <input type="number" id="prod-cost" placeholder="np. 95.00" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:border-blue-600">
+                            </div>
+                            <button onclick="addProduct()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-2xl text-sm font-semibold shadow-md shadow-blue-600/20 transition">+ Dodaj na stan Kickslike</button>
                         </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">Kwota paliwa (zł) *</label>
-                            <input type="number" id="fuel-cost" placeholder="np. 75.00" class="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-black">
+                    </div>
+
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs">
+                        <h3 class="font-bold text-base text-slate-900 mb-4">Aktywny towar w magazynie</h3>
+                        <div id="active-products-list" class="space-y-3">
+                            <p class="text-center py-8 text-xs text-slate-400">Brak produktów na stanie.</p>
                         </div>
                     </div>
-                    <button onclick="addFuel()" class="mt-5 bg-blue-600 text-white px-6 py-3 rounded-xl text-sm font-semibold hover:bg-blue-700 transition shadow-sm">Zapisz paliwo</button>
                 </div>
 
-                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                    <h2 class="font-bold text-lg mb-4">Historia przejazdów i tankowań</h2>
-                    <div id="fuel-list" class="space-y-3">
-                        <p class="text-gray-400 text-sm">Brak zapisanych dojazdów.</p>
+                <!-- 3. ARCHIWUM SPRZEDANYCH -->
+                <div id="tab-archiwum" class="tab-content hidden space-y-5">
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs">
+                        <h2 class="font-bold text-base md:text-lg text-slate-900">Archiwum sprzedanych przedmiotów</h2>
+                        <p class="text-xs text-slate-400 mb-5">Pozycje oznaczone stemplem SPRZEDANE wraz z dokładną kwotą transakcji</p>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/60">
+                                <p class="text-xs text-slate-500">Suma sprzedaży</p>
+                                <p id="arch-total-rev" class="text-lg font-extrabold text-slate-900 mt-0.5">0,00 zł</p>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200/60">
+                                <p class="text-xs text-emerald-700">Zysk na sztukach</p>
+                                <p id="arch-total-profit" class="text-lg font-extrabold text-[#0F9D58] mt-0.5">0,00 zł</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="sold-products-list" class="space-y-3">
+                        <div class="bg-white p-8 rounded-3xl border border-dashed border-slate-300 text-center">
+                            <p class="text-sm font-semibold text-slate-600">Archiwum sprzedanych jest jeszcze puste.</p>
+                            <p class="text-xs text-slate-400 mt-1">Kliknij „Oznacz jako sprzedane” w zakładce Towar na sprzedaż.</p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-        </main>
+                <!-- 4. SUMY SPRZEDAŻY -->
+                <div id="tab-sumy" class="tab-content hidden space-y-5">
+                    <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-500">Miesiąc rozliczeniowy:</span>
+                        <span class="px-4 py-1.5 bg-slate-100 rounded-xl text-xs font-bold text-slate-800">listopad 2026</span>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs">
+                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">MIESIĘCZNY PRZYCHÓD</p>
+                        <p id="sumy-rev" class="text-3xl font-extrabold text-slate-900 mt-1 mb-3">0,00 zł</p>
+                        <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden mb-2">
+                            <div id="sumy-limit-bar" class="bg-emerald-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <p id="sumy-left-text" class="text-xs font-semibold text-[#0F9D58]">Zapas do limitu 3 604 zł: 3 604,00 zł</p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs">
+                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">MIESIĘCZNE KOSZTY</p>
+                        <p id="sumy-costs" class="text-2xl font-extrabold text-rose-600 mt-1">0,00 zł</p>
+                        <p id="sumy-costs-breakdown" class="text-xs text-slate-400 mt-1">Boxy: 0,00 zł • Dodatkowe: 0,00 zł • Paliwo: 0,00 zł</p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs">
+                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">MIESIĘCZNY ZAROBEK (DOCHÓD)</p>
+                        <p id="sumy-profit" class="text-2xl font-extrabold text-[#0F9D58] mt-1">0,00 zł</p>
+                        <p class="text-xs text-slate-400 mt-1">Czysty wynik po odliczeniu kosztów</p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs overflow-x-auto">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-bold text-sm text-slate-900">Tabela miesięczna przychodów, kosztów i zysków</h3>
+                            <button onclick="exportCSV()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs font-semibold text-slate-700">Pobierz CSV</button>
+                        </div>
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-slate-400 uppercase">
+                                    <th class="py-2.5 pr-3">Miesiąc</th>
+                                    <th class="py-2.5 px-3">Przychód</th>
+                                    <th class="py-2.5 px-3">Faktury / Boxy</th>
+                                    <th class="py-2.5 px-3">Dodatkowe</th>
+                                    <th class="py-2.5 px-3">Paliwo</th>
+                                    <th class="py-2.5 pl-3 text-right">Zarobek (Dochód)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="font-semibold text-slate-700">
+                                    <td class="py-3 pr-3">2026-11</td>
+                                    <td id="tbl-rev" class="py-3 px-3 text-blue-600">0,00 zł</td>
+                                    <td id="tbl-box" class="py-3 px-3">0,00 zł</td>
+                                    <td id="tbl-cost" class="py-3 px-3">0,00 zł</td>
+                                    <td id="tbl-fuel" class="py-3 px-3">0,00 zł</td>
+                                    <td id="tbl-prof" class="py-3 pl-3 text-right text-[#0F9D58]">0,00 zł</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 5. FAKTURY I BOXY -->
+                <div id="tab-faktury" class="tab-content hidden space-y-5">
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs">
+                        <h2 class="font-bold text-base md:text-lg text-slate-900 mb-4">Dodaj fakturę / zakupiony box z hurtowni</h2>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Hurtownia / Opis boxu *</label>
+                                <input type="text" id="box-desc" placeholder="np. Hurtownia Wólka Kosowska - Box 12 par" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:border-blue-600">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nr faktury / paragonu *</label>
+                                <input type="text" id="box-fv" placeholder="np. FV/2026/11/018" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:border-blue-600">
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Kwota boxa (zł) *</label>
+                                    <input type="number" id="box-amount" placeholder="np. 1000.00" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:border-blue-600">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Liczba sztuk w boxie *</label>
+                                    <input type="number" id="box-qty" placeholder="np. 12" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:border-blue-600">
+                                </div>
+                            </div>
+                            <button onclick="addBox()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-2xl text-sm font-semibold shadow-md shadow-blue-600/20 transition">Zapisz fakturę / box</button>
+                        </div>
+                    </div>
+
+                    <div id="boxes-list" class="space-y-3">
+                        <div class="bg-white p-8 rounded-3xl border border-dashed border-slate-300 text-center text-xs text-slate-400">
+                            Brak zapisanych faktur i boxów.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. DODATKOWE KOSZTA -->
+                <div id="tab-koszty" class="tab-content hidden space-y-5">
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs">
+                        <h2 class="font-bold text-base md:text-lg text-slate-900 mb-4">Dodaj dodatkowy koszt (kartki, drukarka, kartony, folia)</h2>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nazwa wydatku *</label>
+                                <input type="text" id="cost-name" placeholder="np. Ryza papieru A4 + taśma przezroczysta" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:border-blue-600">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Kategoria</label>
+                                <select id="cost-cat" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:border-blue-600">
+                                    <option value="Folia, kartony i taśma">Folia, kartony i taśma</option>
+                                    <option value="Biuro i etykiety">Biuro i etykiety</option>
+                                    <option value="Prowizje i wysyłki">Prowizje i wysyłki</option>
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Kwota (zł) *</label>
+                                    <input type="number" id="cost-val" placeholder="np. 45.00" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:border-blue-600">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nr paragonu / faktury</label>
+                                    <input type="text" id="cost-doc" placeholder="np. PAR/9921" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:border-blue-600">
+                                </div>
+                            </div>
+                            <button onclick="addExtraCost()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-2xl text-sm font-semibold shadow-md shadow-blue-600/20 transition">Dodaj koszt</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-bold text-sm text-slate-900">Lista kosztów dodatkowych</h3>
+                            <span class="text-xs font-semibold text-slate-500">Suma: <strong id="extra-costs-sum" class="text-rose-600">0,00 zł</strong></span>
+                        </div>
+                        <div id="extra-costs-list" class="space-y-2.5">
+                            <p class="text-center py-6 text-xs text-slate-400">Brak zapisanych kosztów dodatkowych.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. PALIWO I DOJAZDY -->
+                <div id="tab-paliwo" class="tab-content hidden space-y-5">
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs">
+                        <h2 class="font-bold text-base md:text-lg text-slate-900 mb-4">Dodaj wpis paliwa / dojazdu po towar</h2>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Trasa / Cel wyjazdu *</label>
+                                <input type="text" id="fuel-route" placeholder="np. Wyjazd po box — Nadarzyn / Wólka Kosowska" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:border-blue-600">
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Dystans (km)</label>
+                                    <input type="number" id="fuel-km" placeholder="np. 55" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:border-blue-600">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Kwota paliwa (zł) *</label>
+                                    <input type="number" id="fuel-val" placeholder="np. 75.00" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:border-blue-600">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nr paragonu / faktury</label>
+                                    <input type="text" id="fuel-doc" placeholder="np. PAR/ORLEN/412" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:border-blue-600">
+                                </div>
+                            </div>
+                            <button onclick="addFuel()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-2xl text-sm font-semibold shadow-md shadow-blue-600/20 transition">Zapisz paliwo</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-bold text-sm text-slate-900">Historia przejazdów i tankowań</h3>
+                            <span class="text-xs font-semibold text-slate-500">Suma: <strong id="fuel-sum" class="text-rose-600">0,00 zł</strong></span>
+                        </div>
+                        <div id="fuel-list" class="space-y-2.5">
+                            <p class="text-center py-6 text-xs text-slate-400">Brak zapisanych dojazdów.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
     </div>
 
-    <!-- Logika JavaScript -->
     <script>
-        const CORRECT_PIN = "0629"; 
+        const PIN_CODE = "0629";
         const MONTHLY_LIMIT = 3604.00;
+        const PIT_LIMIT = 30000.00;
+
+        let db = JSON.parse(localStorage.getItem('kickslike_db_v1')) || {
+            products: [],
+            boxes: [],
+            costs: [],
+            fuels: []
+        };
+
+        function saveDB() {
+            localStorage.setItem('kickslike_db_v1', JSON.stringify(db));
+            renderAll();
+        }
 
         function checkPin() {
-            const input = document.getElementById('pin-input').value;
-            const error = document.getElementById('pin-error');
-            if (input === CORRECT_PIN) {
+            const val = document.getElementById('pin-input').value;
+            if (val === PIN_CODE) {
                 document.getElementById('login-screen').classList.add('hidden');
-                localStorage.setItem('kickslike_auth', 'true');
+                sessionStorage.setItem('kickslike_unlocked', '1');
             } else {
-                error.classList.remove('hidden');
+                document.getElementById('pin-error').classList.remove('hidden');
             }
         }
 
+        document.getElementById('pin-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkPin();
+        });
+
         function lockApp() {
-            localStorage.removeItem('kickslike_auth');
+            sessionStorage.removeItem('kickslike_unlocked');
             document.getElementById('pin-input').value = '';
             document.getElementById('pin-error').classList.add('hidden');
             document.getElementById('login-screen').classList.remove('hidden');
         }
 
-        function switchTab(tabName) {
-            const panes = document.querySelectorAll('.tab-pane');
-            panes.forEach(pane => pane.classList.add('hidden'));
-            
-            const activePane = document.getElementById('content-' + tabName);
-            if (activePane) {
-                activePane.classList.remove('hidden');
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('mobile-backdrop');
+            sidebar.classList.toggle('-translate-x-full');
+            backdrop.classList.toggle('hidden');
+        }
+
+        const tabTitles = {
+            pulpit: 'Mój pulpit',
+            towar: 'Towar na sprzedaż',
+            archiwum: 'Archiwum sprzedanych',
+            sumy: 'Sumy sprzedaży',
+            faktury: 'Faktury i Boxy',
+            koszty: 'Dodatkowe koszta',
+            paliwo: 'Paliwo i dojazdy'
+        };
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            document.getElementById('header-title').innerText = tabTitles[tabId];
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-50', 'text-blue-700', 'font-semibold');
+                btn.classList.add('text-slate-600', 'font-medium');
+            });
+            const activeBtn = document.getElementById('nav-' + tabId);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-600', 'font-medium');
+                activeBtn.classList.add('bg-blue-50', 'text-blue-700', 'font-semibold');
+            }
+
+            if (window.innerWidth < 768) {
+                document.getElementById('sidebar').classList.add('-translate-x-full');
+                document.getElementById('mobile-backdrop').classList.add('hidden');
             }
         }
 
-        let items = JSON.parse(localStorage.getItem('kickslike_items')) || [];
-        let invoices = JSON.parse(localStorage.getItem('kickslike_invoices')) || [];
-        let costs = JSON.parse(localStorage.getItem('kickslike_costs')) || [];
-        let fuels = JSON.parse(localStorage.getItem('kickslike_fuels')) || [];
+        function formatPLN(num) {
+            return Number(num || 0).toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' zł';
+        }
 
-        function updateStats() {
-            let totalSales = 0;
-            let totalBuy = 0;
-            items.forEach(i => {
-                totalSales += Number(i.sell || 0);
-                totalBuy += Number(i.buy || 0);
+        function addProduct() {
+            const name = document.getElementById('prod-name').value.trim();
+            const size = document.getElementById('prod-size').value.trim();
+            const platform = document.getElementById('prod-platform').value;
+            const market = parseFloat(document.getElementById('prod-market').value) || 0;
+            const price = parseFloat(document.getElementById('prod-price').value);
+            const boxId = document.getElementById('prod-box').value;
+            const cost = parseFloat(document.getElementById('prod-cost').value) || 0;
+
+            if (!name || !size || isNaN(price)) {
+                alert('Wypełnij nazwę produktu, rozmiar oraz cenę sprzedaży!');
+                return;
+            }
+
+            db.products.unshift({
+                id: Date.now(),
+                name, size, platform, market, price, cost, boxId,
+                status: 'active',
+                date: new Date().toLocaleDateString('pl-PL')
             });
 
-            let totalCostsVal = 0;
-            costs.forEach(c => totalCostsVal += Number(c.amount || 0));
-            fuels.forEach(f => totalCostsVal += Number(f.cost || 0));
-            invoices.forEach(inv => totalCostsVal += Number(inv.cost || 0));
-
-            let totalProfit = totalSales - totalBuy - totalCostsVal;
-
-            document.getElementById('stat-sales').innerText = totalSales.toFixed(2) + " zł";
-            document.getElementById('sumy-rev-val').innerText = totalSales.toFixed(2) + " zł";
-            document.getElementById('stat-stock').innerText = totalSales.toFixed(2) + " zł";
-            document.getElementById('stat-stock-count').innerText = items.length + " aktywnych sztuk na stanie";
-            document.getElementById('stat-costs').innerText = totalCostsVal.toFixed(2) + " zł";
-            
-            const profitEl = document.getElementById('stat-profit');
-            profitEl.innerText = totalProfit.toFixed(2) + " zł";
-            profitEl.className = "text-2xl font-bold " + (totalProfit >= 0 ? "text-emerald-600" : "text-rose-600");
-
-            // Pasek limitu
-            let percentage = Math.round((totalSales / MONTHLY_LIMIT) * 100);
-            if (percentage > 100) percentage = 100;
-            let leftToSell = MONTHLY_LIMIT - totalSales;
-            if (leftToSell < 0) leftToSell = 0;
-
-            let barColor = "bg-emerald-500";
-            let badgeText = "Bezpiecznie";
-            let badgeClass = "text-xs px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full font-semibold";
-
-            if (percentage > 75) {
-                barColor = "bg-rose-500";
-                badgeText = "Uwaga! Blisko limitu";
-                badgeClass = "text-xs px-3 py-1 bg-rose-100 text-rose-700 rounded-full font-semibold";
-            } else if (percentage > 50) {
-                barColor = "bg-amber-500";
-                badgeText = "Środek limitu";
-                badgeClass = "text-xs px-3 py-1 bg-amber-100 text-amber-700 rounded-full font-semibold";
-            }
-
-            document.getElementById('badge-status').innerText = badgeText;
-            document.getElementById('badge-status').className = badgeClass;
-            document.getElementById('pulpit-progress-text').innerText = totalSales.toFixed(2) + " zł (" + percentage + "%)";
-            document.getElementById('sumy-desc').innerText = "Zapas do limitu 3 604 zł: " + leftToSell.toFixed(2) + " zł";
-
-            const pBar = document.getElementById('pulpit-progress');
-            pBar.style.width = percentage + "%";
-            pBar.className = barColor + " h-3 rounded-full transition-all duration-500";
-
-            const sBar = document.getElementById('sumy-progress');
-            sBar.style.width = percentage + "%";
-            sBar.className = barColor + " h-3 rounded-full transition-all duration-500";
+            document.getElementById('prod-name').value = '';
+            document.getElementById('prod-size').value = '';
+            document.getElementById('prod-market').value = '';
+            document.getElementById('prod-price').value = '';
+            document.getElementById('prod-cost').value = '';
+            saveDB();
         }
 
-        function renderAll() {
-            updateStats();
-
-            const itemsList = document.getElementById('items-list');
-            if (items.length === 0) {
-                itemsList.innerHTML = '<p class="text-gray-400 text-sm">Brak towaru na stanie.</p>';
-            } else {
-                itemsList.innerHTML = '';
-                items.forEach((item, idx) => {
-                    itemsList.innerHTML += `
-                        <div class="flex justify-between items-center p-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm">
-                            <div>
-                                <span class="font-bold text-gray-900">${item.name}</span> <span class="text-xs text-gray-500 bg-white px-2 py-0.5 rounded border ml-1">Rozm: ${item.size}</span>
-                                <div class="text-gray-500 text-xs mt-1">Zakup: ${item.buy} zł | Sprzedaż: ${item.sell} zł</div>
-                            </div>
-                            <button onclick="removeItem(${idx})" class="text-rose-600 hover:text-rose-800 text-xs font-semibold px-3 py-1.5 bg-white border border-gray-200 rounded-xl shadow-sm">Usuń</button>
-                        </div>`;
-                });
-            }
-
-            const invList = document.getElementById('invoices-list');
-            if (invoices.length === 0) {
-                invList.innerHTML = '<p class="text-gray-400 text-sm">Brak zapisanych faktur / boxów.</p>';
-            } else {
-                invList.innerHTML = '';
-                invoices.forEach((inv, idx) => {
-                    invList.innerHTML += `
-                        <div class="flex justify-between items-center p-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm">
-                            <div><b class="text-gray-900">${inv.desc}</b><div class="text-xs text-gray-500 mt-0.5">FV: ${inv.number} | Koszt: ${inv.cost} zł (${inv.count} szt.)</div></div>
-                            <button onclick="removeInvoice(${idx})" class="text-rose-600 hover:text-rose-800 text-xs font-semibold px-3 py-1.5 bg-white border border-gray-200 rounded-xl shadow-sm">Usuń</button>
-                        </div>`;
-                });
-            }
-
-            const costList = document.getElementById('costs-list');
-            if (costs.length === 0) {
-                costList.innerHTML = '<p class="text-gray-400 text-sm">Brak dodatkowych kosztów.</p>';
-            } else {
-                costList.innerHTML = '';
-                costs.forEach((c, idx) => {
-                    costList.innerHTML += `
-                        <div class="flex justify-between items-center p-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm">
-                            <div><span class="font-bold text-gray-900">${c.name}</span><div class="text-xs text-gray-500 mt-0.5">Kwota: ${c.amount} zł</div></div>
-                            <button onclick="removeCost(${idx})" class="text-rose-600 hover:text-rose-800 text-xs font-semibold px-3 py-1.5 bg-white border border-gray-200 rounded-xl shadow-sm">Usuń</button>
-                        </div>`;
-                });
-            }
-
-            const fuelList = document.getElementById('fuel-list');
-            if (fuels.length === 0) {
-                fuelList.innerHTML = '<p class="text-gray-400 text-sm">Brak zapisanych dojazdów.</p>';
-            } else {
-                fuelList.innerHTML = '';
-                fuels.forEach((f, idx) => {
-                    fuelList.innerHTML += `
-                        <div class="flex justify-between items-center p-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm">
-                            <div><span class="font-bold text-gray-900">${f.desc}</span><div class="text-xs text-gray-500 mt-0.5">Koszt paliwa: ${f.cost} zł</div></div>
-                            <button onclick="removeFuel(${idx})" class="text-rose-600 hover:text-rose-800 text-xs font-semibold px-3 py-1.5 bg-white border border-gray-200 rounded-xl shadow-sm">Usuń</button>
-                        </div>`;
-                });
+        function markAsSold(id) {
+            const prod = db.products.find(p => p.id === id);
+            if (prod) {
+                prod.status = 'sold';
+                prod.soldDate = new Date().toLocaleDateString('pl-PL');
+                saveDB();
             }
         }
 
-        function addItem() {
-            const name = document.getElementById('item-name').value;
-            const size = document.getElementById('item-size').value;
-            const buy = document.getElementById('item-buy').value;
-            const sell = document.getElementById('item-sell').value;
-            if (!name || !sell) { alert("Wypełnij model i cenę sprzedaży!"); return; }
-            items.push({ name, size, buy, sell });
-            localStorage.setItem('kickslike_items', JSON.stringify(items));
-            document.getElementById('item-name').value = '';
-            document.getElementById('item-size').value = '';
-            document.getElementById('item-buy').value = '';
-            document.getElementById('item-sell').value = '';
-            renderAll();
+        function deleteProduct(id) {
+            db.products = db.products.filter(p => p.id !== id);
+            saveDB();
         }
 
-        function removeItem(idx) {
-            items.splice(idx, 1);
-            localStorage.setItem('kickslike_items', JSON.stringify(items));
-            renderAll();
+        function addBox() {
+            const desc = document.getElementById('box-desc').value.trim();
+            const fv = document.getElementById('box-fv').value.trim();
+            const amount = parseFloat(document.getElementById('box-amount').value);
+            const qty = parseInt(document.getElementById('box-qty').value) || 1;
+
+            if (!desc || !fv || isNaN(amount)) {
+                alert('Wypełnij opis boxa, numer faktury oraz kwotę!');
+                return;
+            }
+
+            db.boxes.unshift({
+                id: Date.now(),
+                desc, fv, amount, qty,
+                date: new Date().toLocaleDateString('pl-PL')
+            });
+
+            document.getElementById('box-desc').value = '';
+            document.getElementById('box-fv').value = '';
+            document.getElementById('box-amount').value = '';
+            document.getElementById('box-qty').value = '';
+            saveDB();
         }
 
-        function addInvoice() {
-            const desc = document.getElementById('invoice-desc').value;
-            const number = document.getElementById('invoice-number').value;
-            const cost = document.getElementById('invoice-cost').value;
-            const count = document.getElementById('invoice-count').value;
-            if (!desc) { alert("Wpisz opis boxu!"); return; }
-            invoices.push({ desc, number, cost, count });
-            localStorage.setItem('kickslike_invoices', JSON.stringify(invoices));
-            document.getElementById('invoice-desc').value = '';
-            document.getElementById('invoice-number').value = '';
-            document.getElementById('invoice-cost').value = '';
-            document.getElementById('invoice-count').value = '';
-            renderAll();
+        function deleteBox(id) {
+            db.boxes = db.boxes.filter(b => b.id !== id);
+            saveDB();
         }
 
-        function removeInvoice(idx) {
-            invoices.splice(idx, 1);
-            localStorage.setItem('kickslike_invoices', JSON.stringify(invoices));
-            renderAll();
-        }
+        function addExtraCost() {
+            const name = document.getElementById('cost-name').value.trim();
+            const cat = document.getElementById('cost-cat').value;
+            const val = parseFloat(document.getElementById('cost-val').value);
+            const doc = document.getElementById('cost-doc').value.trim() || '-';
 
-        function addCost() {
-            const name = document.getElementById('cost-name').value;
-            const amount = document.getElementById('cost-amount').value;
-            if (!name) { alert("Wpisz nazwę wydatku!"); return; }
-            costs.push({ name, amount });
-            localStorage.setItem('kickslike_costs', JSON.stringify(costs));
+            if (!name || isNaN(val)) {
+                alert('Wpisz nazwę wydatku oraz kwotę!');
+                return;
+            }
+
+            db.costs.unshift({
+                id: Date.now(),
+                name, cat, val, doc,
+                date: new Date().toLocaleDateString('pl-PL')
+            });
+
             document.getElementById('cost-name').value = '';
-            document.getElementById('cost-amount').value = '';
-            renderAll();
+            document.getElementById('cost-val').value = '';
+            document.getElementById('cost-doc').value = '';
+            saveDB();
         }
 
-        function removeCost(idx) {
-            costs.splice(idx, 1);
-            localStorage.setItem('kickslike_costs', JSON.stringify(costs));
-            renderAll();
+        function deleteExtraCost(id) {
+            db.costs = db.costs.filter(c => c.id !== id);
+            saveDB();
         }
 
         function addFuel() {
-            const desc = document.getElementById('fuel-desc').value;
-            const cost = document.getElementById('fuel-cost').value;
-            if (!desc) { alert("Wpisz opis trasy!"); return; }
-            fuels.push({ desc, cost });
-            localStorage.setItem('kickslike_fuels', JSON.stringify(fuels));
-            document.getElementById('fuel-desc').value = '';
-            document.getElementById('fuel-cost').value = '';
-            renderAll();
+            const route = document.getElementById('fuel-route').value.trim();
+            const km = parseFloat(document.getElementById('fuel-km').value) || 0;
+            const val = parseFloat(document.getElementById('fuel-val').value);
+            const doc = document.getElementById('fuel-doc').value.trim() || '-';
+
+            if (!route || isNaN(val)) {
+                alert('Wpisz trasę oraz kwotę paliwa!');
+                return;
+            }
+
+            db.fuels.unshift({
+                id: Date.now(),
+                route, km, val, doc,
+                date: new Date().toLocaleDateString('pl-PL')
+            });
+
+            document.getElementById('fuel-route').value = '';
+            document.getElementById('fuel-km').value = '';
+            document.getElementById('fuel-val').value = '';
+            document.getElementById('fuel-doc').value = '';
+            saveDB();
         }
 
-        function removeFuel(idx) {
-            fuels.splice(idx, 1);
-            localStorage.setItem('kickslike_fuels', JSON.stringify(fuels));
-            renderAll();
+        function deleteFuel(id) {
+            db.fuels = db.fuels.filter(f => f.id !== id);
+            saveDB();
+        }
+
+        function renderAll() {
+            const activeProds = db.products.filter(p => p.status === 'active');
+            const soldProds = db.products.filter(p => p.status === 'sold');
+
+            document.getElementById('badge-nav-towar').innerText = activeProds.length;
+            document.getElementById('badge-nav-archiwum').innerText = soldProds.length;
+            document.getElementById('badge-nav-faktury').innerText = db.boxes.length;
+
+            const totalRev = soldProds.reduce((sum, p) => sum + p.price, 0);
+            const soldItemsCost = soldProds.reduce((sum, p) => sum + p.cost, 0);
+            const boxesCost = db.boxes.reduce((sum, b) => sum + b.amount, 0);
+            const extraCosts = db.costs.reduce((sum, c) => sum + c.val, 0);
+            const fuelCosts = db.fuels.reduce((sum, f) => sum + f.val, 0);
+
+            const totalAllCosts = boxesCost + extraCosts + fuelCosts;
+            const netProfit = totalRev - totalAllCosts;
+            const activeStockValue = activeProds.reduce((sum, p) => sum + p.price, 0);
+
+            document.getElementById('dash-rev').innerText = formatPLN(totalRev);
+            document.getElementById('dash-profit').innerText = formatPLN(netProfit);
+            document.getElementById('dash-profit').className = "text-2xl font-extrabold mt-1.5 " + (netProfit >= 0 ? "text-[#0F9D58]" : "text-rose-600");
+            document.getElementById('dash-costs').innerText = formatPLN(totalAllCosts);
+            document.getElementById('dash-stock-val').innerText = formatPLN(activeStockValue);
+            document.getElementById('dash-stock-qty').innerText = `${activeProds.length} aktywnych sztuk na stanie`;
+
+            const limitPct = Math.min(100, Math.round((totalRev / MONTHLY_LIMIT) * 100));
+            const leftToLimit = Math.max(0, MONTHLY_LIMIT - totalRev);
+
+            let barColorClass = "bg-emerald-500";
+            let badgeText = "Bezpiecznie";
+            let badgeClass = "text-xs font-bold px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200";
+            let leftTextColor = "text-xs font-semibold text-[#0F9D58]";
+
+            if (limitPct >= 85) {
+                barColorClass = "bg-rose-500";
+                badgeText = "Uwaga! Blisko limitu";
+                badgeClass = "text-xs font-bold px-3 py-1 rounded-full bg-rose-50 text-rose-600 border border-rose-200";
+                leftTextColor = "text-xs font-semibold text-rose-600";
+            } else if (limitPct >= 50) {
+                barColorClass = "bg-amber-500";
+                badgeText = "Połowa limitu";
+                badgeClass = "text-xs font-bold px-3 py-1 rounded-full bg-amber-50 text-amber-600 border border-amber-200";
+                leftTextColor = "text-xs font-semibold text-amber-600";
+            }
+
+            document.getElementById('dash-limit-badge').innerText = badgeText;
+            document.getElementById('dash-limit-badge').className = badgeClass;
+            document.getElementById('dash-limit-bar').style.width = limitPct + "%";
+            document.getElementById('dash-limit-bar').className = barColorClass + " h-3 rounded-full transition-all duration-500";
+            document.getElementById('dash-limit-left').innerText = `${formatPLN(totalRev)} (${limitPct}%)`;
+
+            const pitIncome = Math.max(0, netProfit);
+            const pitPct = Math.min(100, Math.round((pitIncome / PIT_LIMIT) * 100));
+            document.getElementById('dash-pit-bar').style.width = pitPct + "%";
+            document.getElementById('dash-pit-left').innerText = `${formatPLN(pitIncome)} (${pitPct}%)`;
+
+            document.getElementById('sumy-rev').innerText = formatPLN(totalRev);
+            document.getElementById('sumy-limit-bar').style.width = limitPct + "%";
+            document.getElementById('sumy-limit-bar').className = barColorClass + " h-3 rounded-full transition-all duration-500";
+            document.getElementById('sumy-left-text').innerText = `Zapas do limitu 3 604 zł: ${formatPLN(leftToLimit)}`;
+            document.getElementById('sumy-left-text').className = leftTextColor;
+
+            document.getElementById('sumy-costs').innerText = formatPLN(totalAllCosts);
+            document.getElementById('sumy-costs-breakdown').innerText = `Boxy: ${formatPLN(boxesCost)} • Dodatkowe: ${formatPLN(extraCosts)} • Paliwo: ${formatPLN(fuelCosts)}`;
+            document.getElementById('sumy-profit').innerText = formatPLN(netProfit);
+
+            document.getElementById('tbl-rev').innerText = formatPLN(totalRev);
+            document.getElementById('tbl-box').innerText = formatPLN(boxesCost);
+            document.getElementById('tbl-cost').innerText = formatPLN(extraCosts);
+            document.getElementById('tbl-fuel').innerText = formatPLN(fuelCosts);
+            document.getElementById('tbl-prof').innerText = formatPLN(netProfit);
+
+            document.getElementById('arch-total-rev').innerText = formatPLN(totalRev);
+            document.getElementById('arch-total-profit').innerText = formatPLN(totalRev - soldItemsCost);
+
+            const boxSelect = document.getElementById('prod-box');
+            boxSelect.innerHTML = '<option value="single">-- Zakup pojedynczy --</option>';
+            db.boxes.forEach(b => {
+                boxSelect.innerHTML += `<option value="${b.id}">${b.desc} (${b.fv})</option>`;
+            });
+
+            const activeListEl = document.getElementById('active-products-list');
+            if (activeProds.length === 0) {
+                activeListEl.innerHTML = '<p class="text-center py-8 text-xs text-slate-400">Brak produktów na stanie.</p>';
+            } else {
+                activeListEl.innerHTML = activeProds.map(p => {
+                    const estProfit = p.price - p.cost;
+                    return `
+                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="font-bold text-sm text-slate-900">${p.name}</span>
+                                <span class="text-[11px] font-bold px-2 py-0.5 rounded-lg bg-white border border-slate-200 text-slate-700">${p.size}</span>
+                                <span class="text-[11px] font-semibold px-2 py-0.5 rounded-lg bg-blue-50 text-blue-700">${p.platform}</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-1">Koszt: <b>${formatPLN(p.cost)}</b> • Cena: <b class="text-slate-900">${formatPLN(p.price)}</b> • Zysk szt.: <b class="text-[#0F9D58]">+${formatPLN(estProfit)}</b></p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="markAsSold(${p.id})" class="px-3.5 py-2 bg-[#0F9D58] hover:bg-[#0b8047] text-white rounded-xl text-xs font-semibold transition">Oznacz jako sprzedane</button>
+                            <button onclick="deleteProduct(${p.id})" class="p-2 text-rose-500 hover:bg-rose-50 rounded-xl border border-slate-200 bg-white">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+
+            const soldListEl = document.getElementById('sold-products-list');
+            const recentSalesEl = document.getElementById('dash-recent-sales');
+            if (soldProds.length === 0) {
+                soldListEl.innerHTML = `
+                    <div class="bg-white p-8 rounded-3xl border border-dashed border-slate-300 text-center">
+                        <p class="text-sm font-semibold text-slate-600">Archiwum sprzedanych jest jeszcze puste.</p>
+                        <p class="text-xs text-slate-400 mt-1">Kliknij „Oznacz jako sprzedane” w zakładce Towar na sprzedaż.</p>
+                    </div>`;
+                recentSalesEl.innerHTML = 'Brak sprzedanych przedmiotów. Dodaj towar i oznacz pierwszą sprzedaż.';
+            } else {
+                const soldCards = soldProds.map(p => `
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 flex items-center justify-between gap-3">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] font-extrabold rounded-md uppercase">SPRZEDANE</span>
+                                <span class="font-bold text-sm text-slate-900">${p.name} (${p.size})</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-1">Data: ${p.soldDate || p.date} • Platforma: ${p.platform}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-extrabold text-sm text-slate-900">${formatPLN(p.price)}</p>
+                            <p class="text-[11px] font-semibold text-[#0F9D58]">+${formatPLN(p.price - p.cost)}</p>
+                        </div>
+                    </div>`).join('');
+                soldListEl.innerHTML = soldCards;
+                recentSalesEl.innerHTML = `<div class="space-y-2.5 text-left">${soldProds.slice(0, 3).map(p => `
+                    <div class="flex justify-between items-center p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                        <div>
+                            <p class="font-bold text-xs text-slate-900">${p.name} (${p.size})</p>
+                            <p class="text-[11px] text-slate-400">${p.soldDate || p.date}</p>
+                        </div>
+                        <span class="font-extrabold text-xs text-[#0F9D58]">+${formatPLN(p.price)}</span>
+                    </div>`).join('')}</div>`;
+            }
+
+            const boxesListEl = document.getElementById('boxes-list');
+            if (db.boxes.length === 0) {
+                boxesListEl.innerHTML = '<div class="bg-white p-8 rounded-3xl border border-dashed border-slate-300 text-center text-xs text-slate-400">Brak zapisanych faktur i boxów.</div>';
+            } else {
+                boxesListEl.innerHTML = db.boxes.map(b => `
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 flex items-center justify-between">
+                        <div>
+                            <p class="font-bold text-sm text-slate-900">${b.desc}</p>
+                            <p class="text-xs text-slate-400 mt-0.5">Nr dok.: ${b.fv} • Sztuk: ${b.qty} (${formatPLN(b.amount / b.qty)}/szt.)</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="font-extrabold text-sm text-rose-600">-${formatPLN(b.amount)}</span>
+                            <button onclick="deleteBox(${b.id})" class="text-xs text-slate-400 hover:text-rose-600">✕</button>
+                        </div>
+                    </div>`).join('');
+            }
+
+            document.getElementById('extra-costs-sum').innerText = formatPLN(extraCosts);
+            const extraListEl = document.getElementById('extra-costs-list');
+            if (db.costs.length === 0) {
+                extraListEl.innerHTML = '<p class="text-center py-6 text-xs text-slate-400">Brak zapisanych kosztów dodatkowych.</p>';
+            } else {
+                extraListEl.innerHTML = db.costs.map(c => `
+                    <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between text-xs">
+                        <div>
+                            <p class="font-bold text-slate-900">${c.name}</p>
+                            <p class="text-slate-400 mt-0.5">${c.date} • ${c.cat} • Dok: ${c.doc}</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="font-extrabold text-rose-600">-${formatPLN(c.val)}</span>
+                            <button onclick="deleteExtraCost(${c.id})" class="text-slate-400 hover:text-rose-600">✕</button>
+                        </div>
+                    </div>`).join('');
+            }
+
+            document.getElementById('fuel-sum').innerText = formatPLN(fuelCosts);
+            const fuelListEl = document.getElementById('fuel-list');
+            if (db.fuels.length === 0) {
+                fuelListEl.innerHTML = '<p class="text-center py-6 text-xs text-slate-400">Brak zapisanych dojazdów.</p>';
+            } else {
+                fuelListEl.innerHTML = db.fuels.map(f => `
+                    <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between text-xs">
+                        <div>
+                            <p class="font-bold text-slate-900">${f.route}</p>
+                            <p class="text-slate-400 mt-0.5">${f.date} • Dystans: ${f.km} km • Dok: ${f.doc}</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="font-extrabold text-rose-600">-${formatPLN(f.val)}</span>
+                            <button onclick="deleteFuel(${f.id})" class="text-slate-400 hover:text-rose-600">✕</button>
+                        </div>
+                    </div>`).join('');
+            }
+        }
+
+        function exportCSV() {
+            let csv = "Typ;Nazwa/Opis;Kwota;Data\n";
+            db.products.forEach(p => csv += `Produkt (${p.status});${p.name} (${p.size});${p.price};${p.date}\n`);
+            db.boxes.forEach(b => csv += `Box/Faktura;${b.desc} (${b.fv});-${b.amount};${b.date}\n`);
+            db.costs.forEach(c => csv += `Koszt dodatkowy;${c.name};-${c.val};${c.date}\n`);
+            db.fuels.forEach(f => csv += `Paliwo;${f.route};-${f.val};${f.date}\n`);
+
+            const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "Kickslike_Raport_2026.csv";
+            link.click();
+        }
+
+        function clearAllData() {
+            if (confirm("Czy na pewno chcesz wyczyścić wszystkie zapisane dane z telefonu?")) {
+                localStorage.removeItem('kickslike_db_v1');
+                db = { products: [], boxes: [], costs: [], fuels: [] };
+                renderAll();
+            }
         }
 
         window.onload = function() {
-            if (localStorage.getItem('kickslike_auth') === 'true') {
+            if (sessionStorage.getItem('kickslike_unlocked') === '1') {
                 document.getElementById('login-screen').classList.add('hidden');
             }
             renderAll();
-        }
+        };
     </script>
 </body>
 </html>
