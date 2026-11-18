@@ -27,6 +27,17 @@
         </div>
     </div>
 
+    <!-- MODAL DO PODGLĄDU ZDJĘCIA FAKTURY -->
+    <div id="image-modal" class="fixed inset-0 bg-slate-900/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-4 relative flex flex-col items-center shadow-2xl">
+            <button onclick="closeImageModal()" class="absolute top-4 right-4 w-9 h-9 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center font-bold text-slate-700 transition">✕</button>
+            <h3 class="font-bold text-sm text-slate-800 mb-3">Zdjęcie faktury / paragonu</h3>
+            <div class="w-full max-h-[70vh] overflow-auto flex items-center justify-center bg-slate-50 rounded-2xl p-2 border border-slate-100">
+                <img id="modal-img-element" src="" alt="Faktura" class="max-w-full h-auto rounded-xl object-contain">
+            </div>
+        </div>
+    </div>
+
     <!-- TŁO DLA MENU MOBILNEGO -->
     <div id="mobile-backdrop" onclick="toggleMobileMenu()" class="fixed inset-0 bg-slate-900/50 z-30 hidden md:hidden backdrop-blur-xs"></div>
 
@@ -186,7 +197,7 @@
                         <div class="flex justify-between items-start mb-3">
                             <div>
                                 <h3 class="font-bold text-sm md:text-base text-slate-900">Kwota wolna od podatku PIT (0 zł podatku)</h3>
-                                <p class="text-xs text-slate-400">Roczny czysty dochód (przychód minus koszty z faktur)</p>
+                                <p class="text-xs text-slate-400">Roczny czysty dochód (przychód minus koszty)</p>
                             </div>
                             <span class="text-xs font-bold px-3 py-1 rounded-full bg-blue-50 text-blue-600 border border-blue-200">PIT 0% do 30k</span>
                         </div>
@@ -369,6 +380,10 @@
                                     <label class="block text-xs font-semibold text-slate-700 mb-1.5">Liczba sztuk w boxie *</label>
                                     <input type="number" id="box-qty" placeholder="np. 12" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:border-blue-600">
                                 </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Zdjęcie faktury / paragonu (opcjonalnie)</label>
+                                <input type="file" id="box-img" accept="image/*" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
                             </div>
                             <button onclick="addBox()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-2xl text-sm font-semibold shadow-md shadow-blue-600/20 transition">Zapisz fakturę / box</button>
                         </div>
@@ -562,7 +577,7 @@
             db.products.unshift({
                 id: Date.now(),
                 name, size, platform, market, price, cost, boxId,
-                status: 'active', // Status aktywny w magazynie (NIE wlicza się jeszcze w przychód)
+                status: 'active',
                 date: new Date().toLocaleDateString('pl-PL')
             });
 
@@ -577,7 +592,7 @@
         function markAsSold(id) {
             const prod = db.products.find(p => p.id === id);
             if (prod) {
-                prod.status = 'sold'; // Zmiana na sprzedane - teraz trafia w przychód i limity
+                prod.status = 'sold';
                 prod.soldDate = new Date().toLocaleDateString('pl-PL');
                 saveDB();
             }
@@ -593,15 +608,29 @@
             const fv = document.getElementById('box-fv').value.trim();
             const amount = parseFloat(document.getElementById('box-amount').value);
             const qty = parseInt(document.getElementById('box-qty').value) || 1;
+            const fileInput = document.getElementById('box-img');
 
             if (!desc || !fv || isNaN(amount)) {
                 alert('Wypełnij opis boxa, numer faktury oraz kwotę!');
                 return;
             }
 
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    saveBoxData(desc, fv, amount, qty, e.target.result);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                saveBoxData(desc, fv, amount, qty, null);
+            }
+        }
+
+        function saveBoxData(desc, fv, amount, qty, imgSrc) {
             db.boxes.unshift({
                 id: Date.now(),
                 desc, fv, amount, qty,
+                img: imgSrc,
                 date: new Date().toLocaleDateString('pl-PL')
             });
 
@@ -609,12 +638,23 @@
             document.getElementById('box-fv').value = '';
             document.getElementById('box-amount').value = '';
             document.getElementById('box-qty').value = '';
+            document.getElementById('box-img').value = '';
             saveDB();
         }
 
         function deleteBox(id) {
             db.boxes = db.boxes.filter(b => b.id !== id);
             saveDB();
+        }
+
+        function showImageModal(base64Img) {
+            document.getElementById('modal-img-element').src = base64Img;
+            document.getElementById('image-modal').classList.remove('hidden');
+        }
+
+        function closeImageModal() {
+            document.getElementById('image-modal').classList.add('hidden');
+            document.getElementById('modal-img-element').src = '';
         }
 
         function addExtraCost() {
@@ -682,7 +722,6 @@
             document.getElementById('badge-nav-archiwum').innerText = soldProds.length;
             document.getElementById('badge-nav-faktury').innerText = db.boxes.length;
 
-            // TYLKO sprzedane przedmioty budują przychód i limit
             const totalRev = soldProds.reduce((sum, p) => sum + p.price, 0);
             const soldItemsCost = soldProds.reduce((sum, p) => sum + p.cost, 0);
             
@@ -692,16 +731,12 @@
 
             const totalAllCosts = boxesCost + extraCosts + fuelCosts;
             const netProfit = totalRev - totalAllCosts;
-
-            // Wartość aktywnego towaru w magazynie (suma cen sprzedaży niesprzedanych par)
             const activeStockValue = activeProds.reduce((sum, p) => sum + p.price, 0);
 
             document.getElementById('dash-rev').innerText = formatPLN(totalRev);
             document.getElementById('dash-profit').innerText = formatPLN(netProfit);
             document.getElementById('dash-profit').className = "text-2xl font-extrabold mt-1.5 " + (netProfit >= 0 ? "text-[#0F9D58]" : "text-rose-600");
             document.getElementById('dash-costs').innerText = formatPLN(totalAllCosts);
-            
-            // Tutaj wyświetlamy wartość towaru na stanie (aktywnego w magazynie)
             document.getElementById('dash-stock-val').innerText = formatPLN(activeStockValue);
             document.getElementById('dash-stock-qty').innerText = `${activeProds.length} aktywnych sztuk na stanie`;
 
@@ -827,14 +862,15 @@
                 boxesListEl.innerHTML = '<div class="bg-white p-8 rounded-3xl border border-dashed border-slate-300 text-center text-xs text-slate-400">Brak zapisanych faktur i boxów.</div>';
             } else {
                 boxesListEl.innerHTML = db.boxes.map(b => `
-                    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 flex items-center justify-between">
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div>
                             <p class="font-bold text-sm text-slate-900">${b.desc}</p>
                             <p class="text-xs text-slate-400 mt-0.5">Nr dok.: ${b.fv} • Sztuk: ${b.qty} (${formatPLN(b.amount / b.qty)}/szt.)</p>
                         </div>
-                        <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-3 justify-between sm:justify-end">
+                            ${b.img ? `<button onclick="showImageModal('${b.img}')" class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl text-xs font-semibold transition flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg> Zobacz zdjęcie</button>` : `<span class="text-[11px] text-slate-400 italic">Brak zdjęcia</span>`}
                             <span class="font-extrabold text-sm text-rose-600">-${formatPLN(b.amount)}</span>
-                            <button onclick="deleteBox(${b.id})" class="text-xs text-slate-400 hover:text-rose-600">✕</button>
+                            <button onclick="deleteBox(${b.id})" class="text-xs text-slate-400 hover:text-rose-600 p-1">✕</button>
                         </div>
                     </div>`).join('');
             }
