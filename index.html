@@ -3,122 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kickslike — System v1</title>
+    <title>Kickslike - Panel Zarządzania</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-    </style>
 </head>
-<body class="bg-gray-100 text-gray-800 antialiased">
+<body class="bg-gray-50 text-gray-900 font-sans antialiased">
 
     <!-- Ekran logowania PIN -->
-    <div id="lock-screen" class="fixed inset-0 bg-slate-900 z-50 flex flex-col items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm text-center">
-            <div class="w-12 h-12 bg-blue-600 rounded-xl mx-auto flex items-center justify-center text-white font-bold text-xl mb-4">K</div>
-            <h2 class="text-xl font-bold text-gray-900 mb-1">Kickslike</h2>
-            <p class="text-xs text-gray-500 mb-6">Wprowadź swój PIN, aby odblokować system</p>
-            <input type="password" id="pin-input" maxlength="4" placeholder="••••" class="w-full text-center tracking-widest text-2xl py-3 border border-gray-300 rounded-xl mb-4 focus:outline-none focus:border-blue-600">
-            <button onclick="checkPin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl transition">Odblokuj</button>
-            <p id="pin-error" class="text-red-500 text-xs mt-3 hidden">Błędny PIN! Spróbuj ponownie (domyślnie: 1234)</p>
+    <div id="login-screen" class="fixed inset-0 bg-gray-900 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl text-center">
+            <div class="w-12 h-12 bg-black text-white rounded-xl mx-auto flex items-center justify-center font-bold text-xl mb-4">K</div>
+            <h2 class="text-xl font-bold mb-2">Panel Kickslike</h2>
+            <p class="text-sm text-gray-500 mb-6">Wpisz swój PIN, aby odblokować aplikację</p>
+            <input type="password" id="pin-input" maxlength="4" placeholder="••••" class="w-full text-center text-2xl tracking-widest py-3 border border-gray-300 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-black">
+            <button onclick="checkPin()" class="w-full bg-black text-white py-3 rounded-xl font-medium hover:bg-gray-800 transition">Odblokuj</button>
+            <p id="pin-error" class="text-red-500 text-sm mt-3 hidden">Nieprawidłowy PIN!</p>
         </div>
     </div>
 
-    <!-- Główna zawartość aplikacji -->
-    <div id="app-content" class="hidden min-h-screen flex flex-col lg:flex-row">
-        <!-- Panel boczny -->
-        <aside class="w-full lg:w-64 bg-white border-r border-gray-200 flex flex-col justify-between">
+    <!-- Główny układ aplikacji -->
+    <div id="app-container" class="min-h-screen flex flex-col md:flex-row">
+        
+        <!-- Menu Boczne -->
+        <aside class="w-full md:w-64 bg-white border-b md:border-r border-gray-200 p-4 flex flex-col justify-between">
             <div>
-                <div class="p-6 flex items-center gap-3 border-b border-gray-100">
-                    <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-lg">K</div>
-                    <div>
-                        <h1 class="font-bold text-gray-900 leading-tight">Kickslike</h1>
-                        <span class="text-xs text-blue-600 font-medium">System v1</span>
-                    </div>
+                <div class="flex items-center gap-3 px-3 py-2 mb-6">
+                    <div class="w-8 h-8 bg-black text-white rounded-lg flex items-center justify-center font-bold text-lg">K</div>
+                    <span class="font-bold text-lg">Kickslike</span>
                 </div>
-                <nav class="p-4 space-y-1">
-                    <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-blue-50 text-blue-600 font-medium text-sm">Mój pulpit</a>
-                    <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-gray-600 hover:bg-gray-50 font-medium text-sm">Towar na sprzedaż</a>
-                    <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-gray-600 hover:bg-gray-50 font-medium text-sm">Archiwum sprzedanych</a>
-                    <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-gray-600 hover:bg-gray-50 font-medium text-sm">Sumy sprzedaży</a>
-                    <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-gray-600 hover:bg-gray-50 font-medium text-sm">Faktury i Boxy</a>
-                    <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-gray-600 hover:bg-gray-50 font-medium text-sm">Dodatkowe koszta</a>
-                    <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-gray-600 hover:bg-gray-50 font-medium text-sm">Paliwo i dojazdy</a>
+                <nav class="space-y-1">
+                    <a href="#" onclick="switchTab('pulpit')" class="block px-3 py-2 rounded-lg font-medium text-sm text-gray-700 hover:bg-gray-100">Mój pulpit</a>
+                    <a href="#" onclick="switchTab('towar')" class="block px-3 py-2 rounded-lg font-medium text-sm text-gray-700 hover:bg-gray-100">Towar na sprzedaż</a>
+                    <a href="#" onclick="switchTab('archiwum')" class="block px-3 py-2 rounded-lg font-medium text-sm text-gray-700 hover:bg-gray-100">Archiwum sprzedanych</a>
+                    <a href="#" onclick="switchTab('sumy')" class="block px-3 py-2 rounded-lg font-medium text-sm text-gray-700 hover:bg-gray-100">Sumy sprzedaży</a>
+                    <a href="#" onclick="switchTab('faktury')" class="block px-3 py-2 rounded-lg font-medium text-sm text-gray-700 hover:bg-gray-100">Faktury i Boxy</a>
+                    <a href="#" onclick="switchTab('koszty')" class="block px-3 py-2 rounded-lg font-medium text-sm text-gray-700 hover:bg-gray-100">Dodatkowe koszty</a>
+                    <a href="#" onclick="switchTab('paliwo')" class="block px-3 py-2 rounded-lg font-medium text-sm text-gray-700 hover:bg-gray-100">Paliwo i dojazdy</a>
                 </nav>
             </div>
-            <div class="p-4 border-t border-gray-100 text-xs text-gray-400 text-center">
-                Kickslike © 2026 • Działalność Nierejestrowana
+            <div class="mt-6 pt-4 border-t border-gray-100">
+                <button onclick="lockApp()" class="w-full text-left px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition">Zablokuj aplikację</button>
             </div>
         </aside>
 
-        <!-- Główny obszar roboczy -->
-        <main class="flex-1 p-6 lg:p-10">
-            <header class="flex justify-between items-center mb-8">
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-900">Witaj w Kickslike!</h2>
-                    <p class="text-sm text-gray-500">Twój panel kontrolny limitów i zysków.</p>
-                </div>
-                <button onclick="lockApp()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-medium rounded-lg transition">Zablokuj aplikację</button>
-            </header>
-
-            <!-- Kafelki ze statystykami -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                    <span class="text-xs font-medium text-gray-400 uppercase tracking-wider">Przychód w tym miesiącu</span>
-                    <div class="text-3xl font-bold text-gray-900 mt-2">0,00 zł</div>
-                    <div class="w-full bg-gray-100 h-2 rounded-full mt-4 overflow-hidden">
-                        <div class="bg-blue-600 h-full w-[0%]"></div>
-                    </div>
-                    <span class="text-xs text-gray-500 mt-2 block">Limit: 3 604,00 zł (Działalność nierejestrowana)</span>
-                </div>
-                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                    <span class="text-xs font-medium text-gray-400 uppercase tracking-wider">Czysty zysk roczny</span>
-                    <div class="text-3xl font-bold text-emerald-600 mt-2">0,00 zł</div>
-                    <span class="text-xs text-gray-500 mt-2 block">Kwota wolna od podatku: 30 000 zł</span>
-                </div>
-                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                    <span class="text-xs font-medium text-gray-400 uppercase tracking-wider">Aktywny towar w magazynie</span>
-                    <div class="text-3xl font-bold text-blue-600 mt-2">0 par</div>
-                    <span class="text-xs text-gray-500 mt-2 block">Oczekuje na wystawienie/sprzedaż</span>
-                </div>
+        <!-- Główna zawartość zakładek -->
+        <main class="flex-1 p-6 md:p-10 max-w-4xl">
+            
+            <div id="content-pulpit" class="tab-pane">
+                <h1 class="text-2xl font-bold mb-4">Mój pulpit</h1>
+                <p class="text-gray-600">Witaj w panelu Kickslike! Wszystko działa poprawnie. Wybierz zakładkę z menu po lewej stronie.</p>
             </div>
 
-            <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm text-center py-12">
-                <h3 class="text-lg font-bold text-gray-800 mb-2">System jest gotowy do pracy!</h3>
-                <p class="text-sm text-gray-500 max-w-md mx-auto mb-6">Wszystkie zakładki z menu bocznego są w pełni responsywne. System zabezpieczony jest Twoim osobistym PIN-em.</p>
-                <div class="inline-block bg-blue-50 text-blue-700 px-4 py-2 rounded-xl text-sm font-medium">Domyślny PIN do zmiany w kodzie to: 1234</div>
+            <div id="content-towar" class="tab-pane hidden">
+                <h1 class="text-2xl font-bold mb-4">Towar na sprzedaż</h1>
+                <p class="text-gray-600">Tutaj wkrótce pojawi się lista butów i zarządzanie magazynem.</p>
             </div>
+
+            <div id="content-archiwum" class="tab-pane hidden">
+                <h1 class="text-2xl font-bold mb-4">Archiwum sprzedanych</h1>
+                <p class="text-gray-600">Historia sprzedanych par obuwia.</p>
+            </div>
+
+            <div id="content-sumy" class="tab-pane hidden">
+                <h1 class="text-2xl font-bold mb-4">Sumy sprzedaży</h1>
+                <p class="text-gray-600">Podsumowania finansowe i zyski.</p>
+            </div>
+
+            <div id="content-faktury" class="tab-pane hidden">
+                <h1 class="text-2xl font-bold mb-4">Faktury i Boxy</h1>
+                <p class="text-gray-600">Zarządzanie dowodami zakupu i boxami.</p>
+            </div>
+
+            <div id="content-koszty" class="tab-pane hidden">
+                <h1 class="text-2xl font-bold mb-4">Dodatkowe koszty</h1>
+                <p class="text-gray-600">Koszty operacyjne i prowizje.</p>
+            </div>
+
+            <div id="content-paliwo" class="tab-pane hidden">
+                <h1 class="text-2xl font-bold mb-4">Paliwo i dojazdy</h1>
+                <p class="text-gray-600">Rozliczanie wyjazdów po towar.</p>
+            </div>
+
         </main>
     </div>
 
+    <!-- Logika JavaScript -->
     <script>
-        // Prosta obsługa logowania PIN (domyślny PIN: 1234)
-        const CORRECT_PIN = "0629";
+        // TUTAJ ZMIENIASZ SWÓJ PIN:
+        const CORRECT_PIN = "0629"; // Zmień w cudzysłowie na swój PIN
 
         function checkPin() {
-            const input = document.getElementById("pin-input").value;
-            const error = document.getElementById("pin-error");
+            const input = document.getElementById('pin-input').value;
+            const error = document.getElementById('pin-error');
             if (input === CORRECT_PIN) {
-                document.getElementById("lock-screen").classList.add("hidden");
-                document.getElementById("app-content").classList.remove("hidden");
-                localStorage.setItem("kickslike_unlocked", "true");
+                document.getElementById('login-screen').classList.add('hidden');
+                localStorage.setItem('kickslike_auth', 'true');
             } else {
-                error.classList.remove("hidden");
+                error.classList.remove('hidden');
             }
         }
 
         function lockApp() {
-            localStorage.removeItem("kickslike_unlocked");
-            document.getElementById("lock-screen").classList.remove("hidden");
-            document.getElementById("app-content").classList.add("hidden");
-            document.getElementById("pin-input").value = "";
+            localStorage.removeItem('kickslike_auth');
+            document.getElementById('pin-input').value = '';
+            document.getElementById('pin-error').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
         }
 
-        // Sprawdź czy sesja była odblokowana
+        function switchTab(tabName) {
+            const panes = document.querySelectorAll('.tab-pane');
+            panes.forEach(pane => pane.classList.add('hidden'));
+            
+            const activePane = document.getElementById('content-' + tabName);
+            if (activePane) {
+                activePane.classList.remove('hidden');
+            }
+        }
+
+        // Automatyczne pomijanie PIN-u w ramach tej samej sesji
         window.onload = function() {
-            if (localStorage.getItem("kickslike_unlocked") === "true") {
-                document.getElementById("lock-screen").classList.add("hidden");
-                document.getElementById("app-content").classList.remove("hidden");
+            if (localStorage.getItem('kickslike_auth') === 'true') {
+                document.getElementById('login-screen').classList.add('hidden');
             }
         }
     </script>
