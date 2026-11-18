@@ -224,7 +224,8 @@
                 <!-- 2. TOWAR NA SPRZEDAŻ -->
                 <div id="tab-towar" class="tab-content hidden space-y-5">
                     <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs">
-                        <h2 class="font-bold text-base md:text-lg text-slate-900 mb-4">Dodaj produkt na stan</h2>
+                        <h2 id="form-product-title" class="font-bold text-base md:text-lg text-slate-900 mb-4">Dodaj produkt na stan</h2>
+                        <input type="hidden" id="edit-prod-id" value="">
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nazwa produktu / Model *</label>
@@ -263,7 +264,10 @@
                                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">Koszt zakupu szt. (zł) *</label>
                                 <input type="number" id="prod-cost" placeholder="np. 95.00" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:border-blue-600">
                             </div>
-                            <button onclick="addProduct()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-2xl text-sm font-semibold shadow-md shadow-blue-600/20 transition">+ Dodaj na stan Kickslike</button>
+                            <div class="flex gap-2">
+                                <button onclick="saveProduct()" id="prod-submit-btn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-2xl text-sm font-semibold shadow-md shadow-blue-600/20 transition">+ Dodaj na stan Kickslike</button>
+                                <button onclick="cancelProductEdit()" id="prod-cancel-btn" class="hidden px-5 bg-slate-200 hover:bg-slate-300 text-slate-700 py-3.5 rounded-2xl text-sm font-semibold transition">Anuluj</button>
+                            </div>
                         </div>
                     </div>
 
@@ -361,7 +365,8 @@
                 <!-- 5. FAKTURY I BOXY -->
                 <div id="tab-faktury" class="tab-content hidden space-y-5">
                     <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs">
-                        <h2 class="font-bold text-base md:text-lg text-slate-900 mb-4">Dodaj fakturę / zakupiony box z hurtowni</h2>
+                        <h2 id="form-box-title" class="font-bold text-base md:text-lg text-slate-900 mb-4">Dodaj fakturę / zakupiony box z hurtowni</h2>
+                        <input type="hidden" id="edit-box-id" value="">
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">Hurtownia / Opis boxu *</label>
@@ -385,7 +390,10 @@
                                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">Zdjęcie faktury / paragonu (opcjonalnie)</label>
                                 <input type="file" id="box-img" accept="image/*" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
                             </div>
-                            <button onclick="addBox()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-2xl text-sm font-semibold shadow-md shadow-blue-600/20 transition">Zapisz fakturę / box</button>
+                            <div class="flex gap-2">
+                                <button onclick="saveBox()" id="box-submit-btn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-2xl text-sm font-semibold shadow-md shadow-blue-600/20 transition">Zapisz fakturę / box</button>
+                                <button onclick="cancelBoxEdit()" id="box-cancel-btn" class="hidden px-5 bg-slate-200 hover:bg-slate-300 text-slate-700 py-3.5 rounded-2xl text-sm font-semibold transition">Anuluj</button>
+                            </div>
                         </div>
                     </div>
 
@@ -399,11 +407,12 @@
                 <!-- 6. DODATKOWE KOSZTA -->
                 <div id="tab-koszty" class="tab-content hidden space-y-5">
                     <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs">
-                        <h2 class="font-bold text-base md:text-lg text-slate-900 mb-4">Dodaj dodatkowy koszt (kartki, drukarka, kartony, folia)</h2>
+                        <h2 id="form-cost-title" class="font-bold text-base md:text-lg text-slate-900 mb-4">Dodaj dodatkowy koszt</h2>
+                        <input type="hidden" id="edit-cost-id" value="">
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nazwa wydatku *</label>
-                                <input type="text" id="cost-name" placeholder="np. Ryza papieru A4 + taśma przezroczysta" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:border-blue-600">
+                                <input type="text" id="cost-name" placeholder="np. Ryza papieru A4 + taśma" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:border-blue-600">
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">Kategoria</label>
@@ -423,7 +432,10 @@
                                     <input type="text" id="cost-doc" placeholder="np. PAR/9921" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:border-blue-600">
                                 </div>
                             </div>
-                            <button onclick="addExtraCost()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-2xl text-sm font-semibold shadow-md shadow-blue-600/20 transition">Dodaj koszt</button>
+                            <div class="flex gap-2">
+                                <button onclick="saveExtraCost()" id="cost-submit-btn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-2xl text-sm font-semibold shadow-md shadow-blue-600/20 transition">Dodaj koszt</button>
+                                <button onclick="cancelCostEdit()" id="cost-cancel-btn" class="hidden px-5 bg-slate-200 hover:bg-slate-300 text-slate-700 py-3.5 rounded-2xl text-sm font-semibold transition">Anuluj</button>
+                            </div>
                         </div>
                     </div>
 
@@ -441,11 +453,12 @@
                 <!-- 7. PALIWO I DOJAZDY -->
                 <div id="tab-paliwo" class="tab-content hidden space-y-5">
                     <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs">
-                        <h2 class="font-bold text-base md:text-lg text-slate-900 mb-4">Dodaj wpis paliwa / dojazdu po towar</h2>
+                        <h2 id="form-fuel-title" class="font-bold text-base md:text-lg text-slate-900 mb-4">Dodaj wpis paliwa / dojazdu po towar</h2>
+                        <input type="hidden" id="edit-fuel-id" value="">
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">Trasa / Cel wyjazdu *</label>
-                                <input type="text" id="fuel-route" placeholder="np. Wyjazd po box — Nadarzyn / Wólka Kosowska" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:border-blue-600">
+                                <input type="text" id="fuel-route" placeholder="np. Wyjazd po box — Nadarzyn" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:border-blue-600">
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div>
@@ -461,7 +474,10 @@
                                     <input type="text" id="fuel-doc" placeholder="np. PAR/ORLEN/412" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:border-blue-600">
                                 </div>
                             </div>
-                            <button onclick="addFuel()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-2xl text-sm font-semibold shadow-md shadow-blue-600/20 transition">Zapisz paliwo</button>
+                            <div class="flex gap-2">
+                                <button onclick="saveFuel()" id="fuel-submit-btn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-2xl text-sm font-semibold shadow-md shadow-blue-600/20 transition">Zapisz paliwo</button>
+                                <button onclick="cancelFuelEdit()" id="fuel-cancel-btn" class="hidden px-5 bg-slate-200 hover:bg-slate-300 text-slate-700 py-3.5 rounded-2xl text-sm font-semibold transition">Anuluj</button>
+                            </div>
                         </div>
                     </div>
 
@@ -560,7 +576,9 @@
             return Number(num || 0).toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' zł';
         }
 
-        function addProduct() {
+        // --- PRODUKTY ---
+        function saveProduct() {
+            const editId = document.getElementById('edit-prod-id').value;
             const name = document.getElementById('prod-name').value.trim();
             const size = document.getElementById('prod-size').value.trim();
             const platform = document.getElementById('prod-platform').value;
@@ -574,19 +592,63 @@
                 return;
             }
 
-            db.products.unshift({
-                id: Date.now(),
-                name, size, platform, market, price, cost, boxId,
-                status: 'active',
-                date: new Date().toLocaleDateString('pl-PL')
-            });
+            if (editId) {
+                const prod = db.products.find(p => p.id == editId);
+                if (prod) {
+                    prod.name = name;
+                    prod.size = size;
+                    prod.platform = platform;
+                    prod.market = market;
+                    prod.price = price;
+                    prod.boxId = boxId;
+                    prod.cost = cost;
+                }
+                cancelProductEdit();
+            } else {
+                db.products.unshift({
+                    id: Date.now(),
+                    name, size, platform, market, price, cost, boxId,
+                    status: 'active',
+                    date: new Date().toLocaleDateString('pl-PL')
+                });
+                document.getElementById('prod-name').value = '';
+                document.getElementById('prod-size').value = '';
+                document.getElementById('prod-market').value = '';
+                document.getElementById('prod-price').value = '';
+                document.getElementById('prod-cost').value = '';
+            }
+            saveDB();
+        }
 
+        function editProduct(id) {
+            const p = db.products.find(item => item.id == id);
+            if (!p) return;
+            document.getElementById('edit-prod-id').value = p.id;
+            document.getElementById('prod-name').value = p.name;
+            document.getElementById('prod-size').value = p.size;
+            document.getElementById('prod-platform').value = p.platform;
+            document.getElementById('prod-market').value = p.market;
+            document.getElementById('prod-price').value = p.price;
+            document.getElementById('prod-box').value = p.boxId;
+            document.getElementById('prod-cost').value = p.cost;
+
+            document.getElementById('form-product-title').innerText = "Edytuj produkt";
+            document.getElementById('prod-submit-btn').innerText = "Zapisz zmiany";
+            document.getElementById('prod-cancel-btn').classList.remove('hidden');
+            switchTab('towar');
+        }
+
+        function cancelProductEdit() {
+            document.getElementById('edit-prod-id').value = '';
             document.getElementById('prod-name').value = '';
             document.getElementById('prod-size').value = '';
             document.getElementById('prod-market').value = '';
             document.getElementById('prod-price').value = '';
             document.getElementById('prod-cost').value = '';
-            saveDB();
+
+            document.getElementById('form-product-title').innerText = "Dodaj produkt na stan";
+            document.getElementById('prod-submit-btn').innerText = "+ Dodaj na stan Kickslike";
+            document.getElementById('prod-cancel-btn').classList.add('hidden');
         }
 
         function markAsSold(id) {
@@ -598,12 +660,25 @@
             }
         }
 
-        function deleteProduct(id) {
-            db.products = db.products.filter(p => p.id !== id);
-            saveDB();
+        function revertToActive(id) {
+            const prod = db.products.find(p => p.id === id);
+            if (prod) {
+                prod.status = 'active';
+                delete prod.soldDate;
+                saveDB();
+            }
         }
 
-        function addBox() {
+        function deleteProduct(id) {
+            if (confirm("Czy na pewno chcesz usunąć ten produkt?")) {
+                db.products = db.products.filter(p => p.id !== id);
+                saveDB();
+            }
+        }
+
+        // --- FAKTURY / BOXY ---
+        function saveBox() {
+            const editId = document.getElementById('edit-box-id').value;
             const desc = document.getElementById('box-desc').value.trim();
             const fv = document.getElementById('box-fv').value.trim();
             const amount = parseFloat(document.getElementById('box-amount').value);
@@ -618,33 +693,74 @@
             if (fileInput.files && fileInput.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    saveBoxData(desc, fv, amount, qty, e.target.result);
+                    commitBoxSave(editId, desc, fv, amount, qty, e.target.result);
                 };
                 reader.readAsDataURL(fileInput.files[0]);
             } else {
-                saveBoxData(desc, fv, amount, qty, null);
+                commitBoxSave(editId, desc, fv, amount, qty, null);
             }
         }
 
-        function saveBoxData(desc, fv, amount, qty, imgSrc) {
-            db.boxes.unshift({
-                id: Date.now(),
-                desc, fv, amount, qty,
-                img: imgSrc,
-                date: new Date().toLocaleDateString('pl-PL')
-            });
+        function commitBoxSave(editId, desc, fv, amount, qty, newImg) {
+            if (editId) {
+                const b = db.boxes.find(item => item.id == editId);
+                if (b) {
+                    b.desc = desc;
+                    b.fv = fv;
+                    b.amount = amount;
+                    b.qty = qty;
+                    if (newImg) b.img = newImg;
+                }
+                cancelBoxEdit();
+            } else {
+                db.boxes.unshift({
+                    id: Date.now(),
+                    desc, fv, amount, qty,
+                    img: newImg,
+                    date: new Date().toLocaleDateString('pl-PL')
+                });
+                document.getElementById('box-desc').value = '';
+                document.getElementById('box-fv').value = '';
+                document.getElementById('box-amount').value = '';
+                document.getElementById('box-qty').value = '';
+                document.getElementById('box-img').value = '';
+            }
+            saveDB();
+        }
 
+        function editBox(id) {
+            const b = db.boxes.find(item => item.id == id);
+            if (!b) return;
+            document.getElementById('edit-box-id').value = b.id;
+            document.getElementById('box-desc').value = b.desc;
+            document.getElementById('box-fv').value = b.fv;
+            document.getElementById('box-amount').value = b.amount;
+            document.getElementById('box-qty').value = b.qty;
+
+            document.getElementById('form-box-title').innerText = "Edytuj fakturę / box";
+            document.getElementById('box-submit-btn').innerText = "Zapisz zmiany";
+            document.getElementById('box-cancel-btn').classList.remove('hidden');
+            switchTab('faktury');
+        }
+
+        function cancelBoxEdit() {
+            document.getElementById('edit-box-id').value = '';
             document.getElementById('box-desc').value = '';
             document.getElementById('box-fv').value = '';
             document.getElementById('box-amount').value = '';
             document.getElementById('box-qty').value = '';
             document.getElementById('box-img').value = '';
-            saveDB();
+
+            document.getElementById('form-box-title').innerText = "Dodaj fakturę / zakupiony box z hurtowni";
+            document.getElementById('box-submit-btn').innerText = "Zapisz fakturę / box";
+            document.getElementById('box-cancel-btn').classList.add('hidden');
         }
 
         function deleteBox(id) {
-            db.boxes = db.boxes.filter(b => b.id !== id);
-            saveDB();
+            if (confirm("Usunąć tę fakturę?")) {
+                db.boxes = db.boxes.filter(b => b.id !== id);
+                saveDB();
+            }
         }
 
         function showImageModal(base64Img) {
@@ -657,7 +773,9 @@
             document.getElementById('modal-img-element').src = '';
         }
 
-        function addExtraCost() {
+        // --- KOSZTY DODATKOWE ---
+        function saveExtraCost() {
+            const editId = document.getElementById('edit-cost-id').value;
             const name = document.getElementById('cost-name').value.trim();
             const cat = document.getElementById('cost-cat').value;
             const val = parseFloat(document.getElementById('cost-val').value);
@@ -668,24 +786,64 @@
                 return;
             }
 
-            db.costs.unshift({
-                id: Date.now(),
-                name, cat, val, doc,
-                date: new Date().toLocaleDateString('pl-PL')
-            });
+            if (editId) {
+                const c = db.costs.find(item => item.id == editId);
+                if (c) {
+                    c.name = name;
+                    c.cat = cat;
+                    c.val = val;
+                    c.doc = doc;
+                }
+                cancelCostEdit();
+            } else {
+                db.costs.unshift({
+                    id: Date.now(),
+                    name, cat, val, doc,
+                    date: new Date().toLocaleDateString('pl-PL')
+                });
+                document.getElementById('cost-name').value = '';
+                document.getElementById('cost-val').value = '';
+                document.getElementById('cost-doc').value = '';
+            }
+            saveDB();
+        }
 
+        function editExtraCost(id) {
+            const c = db.costs.find(item => item.id == id);
+            if (!c) return;
+            document.getElementById('edit-cost-id').value = c.id;
+            document.getElementById('cost-name').value = c.name;
+            document.getElementById('cost-cat').value = c.cat;
+            document.getElementById('cost-val').value = c.val;
+            document.getElementById('cost-doc').value = c.doc;
+
+            document.getElementById('form-cost-title').innerText = "Edytuj koszt dodatkowy";
+            document.getElementById('cost-submit-btn').innerText = "Zapisz zmiany";
+            document.getElementById('cost-cancel-btn').classList.remove('hidden');
+            switchTab('koszty');
+        }
+
+        function cancelCostEdit() {
+            document.getElementById('edit-cost-id').value = '';
             document.getElementById('cost-name').value = '';
             document.getElementById('cost-val').value = '';
             document.getElementById('cost-doc').value = '';
-            saveDB();
+
+            document.getElementById('form-cost-title').innerText = "Dodaj dodatkowy koszt";
+            document.getElementById('cost-submit-btn').innerText = "Dodaj koszt";
+            document.getElementById('cost-cancel-btn').classList.add('hidden');
         }
 
         function deleteExtraCost(id) {
-            db.costs = db.costs.filter(c => c.id !== id);
-            saveDB();
+            if (confirm("Usunąć ten koszt?")) {
+                db.costs = db.costs.filter(c => c.id !== id);
+                saveDB();
+            }
         }
 
-        function addFuel() {
+        // --- PALIWO ---
+        function saveFuel() {
+            const editId = document.getElementById('edit-fuel-id').value;
             const route = document.getElementById('fuel-route').value.trim();
             const km = parseFloat(document.getElementById('fuel-km').value) || 0;
             const val = parseFloat(document.getElementById('fuel-val').value);
@@ -696,22 +854,61 @@
                 return;
             }
 
-            db.fuels.unshift({
-                id: Date.now(),
-                route, km, val, doc,
-                date: new Date().toLocaleDateString('pl-PL')
-            });
+            if (editId) {
+                const f = db.fuels.find(item => item.id == editId);
+                if (f) {
+                    f.route = route;
+                    f.km = km;
+                    f.val = val;
+                    f.doc = doc;
+                }
+                cancelFuelEdit();
+            } else {
+                db.fuels.unshift({
+                    id: Date.now(),
+                    route, km, val, doc,
+                    date: new Date().toLocaleDateString('pl-PL')
+                });
+                document.getElementById('fuel-route').value = '';
+                document.getElementById('fuel-km').value = '';
+                document.getElementById('fuel-val').value = '';
+                document.getElementById('fuel-doc').value = '';
+            }
+            saveDB();
+        }
 
+        function editFuel(id) {
+            const f = db.fuels.find(item => item.id == id);
+            if (!f) return;
+            document.getElementById('edit-fuel-id').value = f.id;
+            document.getElementById('fuel-route').value = f.route;
+            document.getElementById('fuel-km').value = f.km;
+            document.getElementById('fuel-val').value = f.val;
+            document.getElementById('fuel-doc').value = f.doc;
+
+            document.getElementById('form-fuel-title').innerText = "Edytuj wpis paliwa";
+            document.getElementById('fuel-submit-btn').innerText = "Zapisz zmiany";
+            document.getElementById('fuel-cancel-btn').classList.remove('hidden');
+            switchTab('paliwo');
+        }
+
+        function cancelFuelEdit() {
+            document.getElementById('edit-fuel-id').value = '';
             document.getElementById('fuel-route').value = '';
             document.getElementById('fuel-km').value = '';
             document.getElementById('fuel-val').value = '';
             document.getElementById('fuel-doc').value = '';
-            saveDB();
+
+            document.getElementById('form-fuel-title').innerText = "Dodaj wpis paliwa / dojazdu po towar";
+            document.getElementById('fuel-submit-btn').innerText = "Zapisz paliwo";
+            document.getElementById('fuel-cancel-btn').classList.add('hidden');
         }
 
         function deleteFuel(id) {
-            db.fuels = db.fuels.filter(f => f.id !== id);
-            saveDB();
+            if (confirm("Usunąć ten wpis paliwa?")) {
+                db.fuels = db.fuels.filter(f => f.id !== id);
+                saveDB();
+            }
         }
 
         function renderAll() {
@@ -796,6 +993,7 @@
                 boxSelect.innerHTML += `<option value="${b.id}">${b.desc} (${b.fv})</option>`;
             });
 
+            // RENDER AKTYWNYCH
             const activeListEl = document.getElementById('active-products-list');
             if (activeProds.length === 0) {
                 activeListEl.innerHTML = '<p class="text-center py-8 text-xs text-slate-400">Brak produktów na stanie.</p>';
@@ -812,8 +1010,9 @@
                             </div>
                             <p class="text-xs text-slate-500 mt-1">Koszt: <b>${formatPLN(p.cost)}</b> • Cena: <b class="text-slate-900">${formatPLN(p.price)}</b> • Szacowany zysk: <b class="text-[#0F9D58]">+${formatPLN(estProfit)}</b></p>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <button onclick="markAsSold(${p.id})" class="px-3.5 py-2 bg-[#0F9D58] hover:bg-[#0b8047] text-white rounded-xl text-xs font-semibold transition">Oznacz jako sprzedane</button>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <button onclick="markAsSold(${p.id})" class="px-3 py-2 bg-[#0F9D58] hover:bg-[#0b8047] text-white rounded-xl text-xs font-semibold transition">Sprzedane</button>
+                            <button onclick="editProduct(${p.id})" class="px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-semibold transition">Edytuj</button>
                             <button onclick="deleteProduct(${p.id})" class="p-2 text-rose-500 hover:bg-rose-50 rounded-xl border border-slate-200 bg-white">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                             </button>
@@ -822,28 +1021,32 @@
                 }).join('');
             }
 
+            // RENDER SPRZEDANYCH (Z MOŻLIWOŚCIĄ COFNIĘCIA)
             const soldListEl = document.getElementById('sold-products-list');
             const recentSalesEl = document.getElementById('dash-recent-sales');
             if (soldProds.length === 0) {
                 soldListEl.innerHTML = `
                     <div class="bg-white p-8 rounded-3xl border border-dashed border-slate-300 text-center">
                         <p class="text-sm font-semibold text-slate-600">Archiwum sprzedanych jest jeszcze puste.</p>
-                        <p class="text-xs text-slate-400 mt-1">Kliknij „Oznacz jako sprzedane” w zakładce Towar na sprzedaż.</p>
+                        <p class="text-xs text-slate-400 mt-1">Kliknij „Sprzedane” przy produkcie.</p>
                     </div>`;
                 recentSalesEl.innerHTML = 'Brak sprzedanych przedmiotów. Oznacz towar jako sprzedany, aby pojawił się tutaj.';
             } else {
                 const soldCards = soldProds.map(p => `
-                    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 flex items-center justify-between gap-3">
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div>
                             <div class="flex items-center gap-2">
                                 <span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] font-extrabold rounded-md uppercase">SPRZEDANE</span>
                                 <span class="font-bold text-sm text-slate-900">${p.name} (${p.size})</span>
                             </div>
-                            <p class="text-xs text-slate-400 mt-1">Data sprzedaży: ${p.soldDate || p.date} • Platforma: ${p.platform}</p>
+                            <p class="text-xs text-slate-400 mt-1">Data: ${p.soldDate || p.date} • ${p.platform}</p>
                         </div>
-                        <div class="text-right">
-                            <p class="font-extrabold text-sm text-slate-900">${formatPLN(p.price)}</p>
-                            <p class="text-[11px] font-semibold text-[#0F9D58]">+${formatPLN(p.price - p.cost)}</p>
+                        <div class="flex items-center gap-4 justify-between sm:justify-end">
+                            <div class="text-right">
+                                <p class="font-extrabold text-sm text-slate-900">${formatPLN(p.price)}</p>
+                                <p class="text-[11px] font-semibold text-[#0F9D58]">+${formatPLN(p.price - p.cost)}</p>
+                            </div>
+                            <button onclick="revertToActive(${p.id})" class="px-3 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 rounded-xl text-xs font-semibold transition" title="Cofnij do magazynu w razie pomyłki">Cofnij / Na stan</button>
                         </div>
                     </div>`).join('');
                 soldListEl.innerHTML = soldCards;
@@ -857,6 +1060,7 @@
                     </div>`).join('')}</div>`;
             }
 
+            // RENDER FAKTURY / BOXY
             const boxesListEl = document.getElementById('boxes-list');
             if (db.boxes.length === 0) {
                 boxesListEl.innerHTML = '<div class="bg-white p-8 rounded-3xl border border-dashed border-slate-300 text-center text-xs text-slate-400">Brak zapisanych faktur i boxów.</div>';
@@ -867,14 +1071,16 @@
                             <p class="font-bold text-sm text-slate-900">${b.desc}</p>
                             <p class="text-xs text-slate-400 mt-0.5">Nr dok.: ${b.fv} • Sztuk: ${b.qty} (${formatPLN(b.amount / b.qty)}/szt.)</p>
                         </div>
-                        <div class="flex items-center gap-3 justify-between sm:justify-end">
-                            ${b.img ? `<button onclick="showImageModal('${b.img}')" class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl text-xs font-semibold transition flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg> Zobacz zdjęcie</button>` : `<span class="text-[11px] text-slate-400 italic">Brak zdjęcia</span>`}
+                        <div class="flex items-center gap-2 flex-wrap justify-between sm:justify-end">
+                            ${b.img ? `<button onclick="showImageModal('${b.img}')" class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl text-xs font-semibold transition">Zdjęcie</button>` : ``}
                             <span class="font-extrabold text-sm text-rose-600">-${formatPLN(b.amount)}</span>
-                            <button onclick="deleteBox(${b.id})" class="text-xs text-slate-400 hover:text-rose-600 p-1">✕</button>
+                            <button onclick="editBox(${b.id})" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-semibold transition">Edytuj</button>
+                            <button onclick="deleteBox(${b.id})" class="text-xs text-slate-400 hover:text-rose-600 p-1 font-bold">✕</button>
                         </div>
                     </div>`).join('');
             }
 
+            // RENDER KOSZTY DODATKOWE
             document.getElementById('extra-costs-sum').innerText = formatPLN(extraCosts);
             const extraListEl = document.getElementById('extra-costs-list');
             if (db.costs.length === 0) {
@@ -888,11 +1094,13 @@
                         </div>
                         <div class="flex items-center gap-3">
                             <span class="font-extrabold text-rose-600">-${formatPLN(c.val)}</span>
+                            <button onclick="editExtraCost(${c.id})" class="text-blue-600 hover:underline font-semibold">Edytuj</button>
                             <button onclick="deleteExtraCost(${c.id})" class="text-slate-400 hover:text-rose-600">✕</button>
                         </div>
                     </div>`).join('');
             }
 
+            // RENDER PALIWO
             document.getElementById('fuel-sum').innerText = formatPLN(fuelCosts);
             const fuelListEl = document.getElementById('fuel-list');
             if (db.fuels.length === 0) {
@@ -902,10 +1110,11 @@
                     <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between text-xs">
                         <div>
                             <p class="font-bold text-slate-900">${f.route}</p>
-                            <p class="text-slate-400 mt-0.5">${f.date} • Dystans: ${f.km} km • Dok: ${f.doc}</p>
+                            <p class="text-slate-400 mt-0.5">${f.date} • ${f.km} km • Dok: ${f.doc}</p>
                         </div>
                         <div class="flex items-center gap-3">
                             <span class="font-extrabold text-rose-600">-${formatPLN(f.val)}</span>
+                            <button onclick="editFuel(${f.id})" class="text-blue-600 hover:underline font-semibold">Edytuj</button>
                             <button onclick="deleteFuel(${f.id})" class="text-slate-400 hover:text-rose-600">✕</button>
                         </div>
                     </div>`).join('');
